@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Miraga STP Operators Workspace</title>
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --white:#ffffff;
+  --bg:#f4f6f7;
+  --muted:#eef1f2;
+  --soft:#6b7280;
+  --green:#2f855a;
+  --brown:#6b4c3b;
+  --radius:12px;
+  --shadow:0 10px 28px rgba(20,20,20,0.06);
+  --maxw:1100px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:"Acumin Pro","Montserrat",system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+  background:var(--bg);
+  color:var(--brown);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  display:flex;
+  justify-content:center;
+  padding:28px;
+}
+
+/* container */
+.container{width:100%;max-width:var(--maxw)}
+
+/* header */
+.header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--brown));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+h1{font-family:"Montserrat",sans-serif;margin:0;font-size:1.05rem}
+.tag{color:var(--soft);font-size:0.9rem}
+
+/* Auth */
+.auth-card{margin:20px auto 0;background:var(--white);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.tab-row{display:flex}
+.tab{
+  flex:1;padding:14px;text-align:center;font-weight:700;color:#fff;cursor:pointer;user-select:none;
+}
+.tab.login{background:var(--green)}
+.tab.register{background:var(--green)}
+.tab.dim{opacity:0.9}
+.panel{padding:20px;animation:fade .35s}
+.hidden{display:none}
+label{display:block;margin-top:10px;font-size:0.95rem}
+input,textarea,select,button{
+  width:100%;padding:10px;margin-top:8px;border-radius:10px;border:1px solid #ddd;font-family:inherit;
+}
+textarea{min-height:90px;resize:vertical}
+button.primary{background:var(--green);color:#fff;border:0;font-weight:700;padding:10px 12px;border-radius:10px;cursor:pointer}
+button.ghost{background:transparent;border:1px solid #d5d7d8;padding:9px;border-radius:10px;cursor:pointer}
+.note{color:var(--soft);font-size:0.95rem;margin-top:8px}
+.success{color:var(--green);font-weight:700;margin-top:8px}
+.small{font-size:0.9rem;color:var(--soft)}
+
+@keyframes fade{from{opacity:0}to{opacity:1}}
+
+/* app layout */
+.app{display:none;margin-top:18px}
+.layout{display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:start}
+@media(max-width:900px){ .layout{grid-template-columns:1fr} }
+
+/* sidebar */
+.sidebar{
+  background:var(--white);
+  color:black;
+  border-radius:12px;
+  padding:12px;
+  min-height:60vh;
+  transform:translateX(0);
+  transition:transform .28s ease;
+  position:relative;
+}
+.sidebar.collapsed{transform:translateX(-1%);}
+.brand-mini{display:flex;gap:10px;align-items:center;padding:6px 0}
+.nav{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+.nav button{background:transparent;border:0;color:inherit;padding:10px 12px;text-align:left;border-radius:8px;cursor:pointer;font-weight:700}
+.nav button:focus{outline:3px solid rgba(47,133,90,0.18)}
+.nav button.active{background:linear-gradient(90deg,var(--green),var(--brown));color:white}
+
+/* main */
+.main{background:var(--white);border-radius:12px;padding:18px;box-shadow:var(--shadow)}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+.toggle{background:var(--green);color:white;border:0;padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:700}
+.section{margin-top:12px}
+.card{background:var(--muted);padding:12px;border-radius:10px;border:1px solid #eee;margin-bottom:12px}
+.item{background:var(--white);padding:12px;border-radius:10px;border:1px solid #eee;margin-bottom:10px}
+.kpi-row{display:flex;gap:12px;margin-top:12px}
+.kpi{flex:1;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfbfb);box-shadow:0 4px 10px rgba(0,0,0,0.04);border:1px solid #eee}
+.kpi strong{display:block;font-size:1.2rem}
+.footer{margin-top:18px;color:var(--soft);text-align:center;font-size:0.9rem}
+
+/* small controls */
+.row{display:flex;gap:10px;align-items:center}
+.select-inline{width:auto;padding:8px;border-radius:8px;border:1px solid #ddd}
+.badge{padding:6px 10px;border-radius:999px;background:var(--muted);font-weight:700}
+</style>
+</head>
+<body>
+  <div class="container" role="application">
+    <div class="header">
+      <div class="brand" aria-hidden="true">
+        <div class="logo">STP</div>
+        <div>
+          <h1>Miraga STP Operators Workspace</h1>
+          <div class="tag">Announcements · Material Requests · Documents · Payslips</div>
+        </div>
+      </div>
+      <div id="userBadge" aria-live="polite"></div>
+    </div>
+
+    <!-- Auth -->
+    <div class="auth-card" id="authCard" aria-labelledby="authTitle">
+      <div class="tab-row" role="tablist">
+        <div id="tabLogin" class="tab login" role="tab" aria-selected="true" tabindex="0">Login</div>
+        <div id="tabRegister" class="tab register dim" role="tab" aria-selected="false" tabindex="0">Register</div>
+      </div>
+
+      <div id="panelLogin" class="panel" aria-hidden="false">
+        <h2 id="authTitle" style="margin:0 0 6px 0">Sign in</h2>
+        <div class="note">Sign in your account. Don't have an account? Sign up below.</div>
+
+        <form id="loginForm" onsubmit="return handleLogin(event)">
+          <label for="loginEmail">Email</label>
+          <input id="loginEmail" type="email" autocomplete="username" required>
+
+          <label for="loginPw">Password</label>
+          <input id="loginPw" type="password" autocomplete="current-password" minlength="6" required>
+
+          <div style="display:flex;gap:10px;margin-top:12px">
+            <button class="primary" type="submit">Sign in</button>
+            <button type="button" class="ghost" onclick="switchToRegister()">Create account</button>
+          </div>
+          <div id="loginMsg" class="small" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+
+      <div id="panelRegister" class="panel hidden" aria-hidden="true">
+        <h2 style="margin:0 0 6px 0">Operator Registration</h2>
+        <div class="note">Operators create accounts here. After registering you remain on this tab and see a success message.</div>
+
+        <form id="registerForm" onsubmit="return handleRegister(event)">
+          <label for="regName">Full name</label>
+          <input id="regName" type="text" required>
+
+          <label for="regEmail">Email</label>
+          <input id="regEmail" type="email" autocomplete="email" required>
+
+          <label for="regPw">Password (min 6 chars)</label>
+          <input id="regPw" type="password" minlength="6" required>
+
+          <div style="display:flex;gap:10px;margin-top:12px">
+            <button class="primary" type="submit">Register</button>
+            <button type="button" class="ghost" onclick="switchToLogin()">Back to login</button>
+          </div>
+          <div id="regMsg" class="success" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- App -->
+    <div class="app" id="appArea" aria-hidden="true">
+      <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar collapsed" id="sidebar" aria-label="Main sidebar">
+          <div class="brand-mini" style="padding-bottom:8px">
+            <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--green));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">W</div>
+            <div style="font-weight:700">Workspace</div>
+          </div>
+
+          <nav class="nav" aria-label="Workspace navigation">
+            <button id="navDashboard">Dashboard</button>
+            <button id="navAnnouncements">Announcements</button>
+            <button id="navRequests">Material Requests</button>
+            <button id="navDocs">Document Status</button>
+            <button id="navPayslips">Payslip Requests</button>
+            <button id="navOperators">Operators</button>
+            <button id="navLogout">Logout</button>
+          </nav>
+
+          <div style="position:absolute;bottom:12px;left:12px;font-size:0.9rem;color:rgba(255,255,255,0.85)">&copy; STP</div>
+        </aside>
+
+        <!-- Main -->
+        <main class="main" id="main">
+          <div class="topbar">
+            <div id="welcome"></div>
+            <div>
+              <button class="toggle" id="toggleBtn">☰ Menu</button>
+            </div>
+          </div>
+
+          <!-- Dashboard (admin only) -->
+          <section id="secDashboard" class="section hidden">
+            <h3>Dashboard</h3>
+            <div class="kpi-row">
+              <div class="kpi"><strong id="kpiAnnouncements">0</strong>Announcements</div>
+              <div class="kpi"><strong id="kpiRequests">0</strong>Total Requests</div>
+              <div class="kpi"><strong id="kpiDocs">0</strong>Documents</div>
+              <div class="kpi"><strong id="kpiPayslips">0</strong>Payslip Requests</div>
+              <div class="kpi"><strong id="kpiOperators">0</strong>Operators</div>
+            </div>
+            <div style="margin-top:12px" id="dashboardDetails"></div>
+          </section>
+
+          <!-- Announcements -->
+          <section id="secAnnouncements" class="section hidden">
+            <h3>Announcements</h3>
+            <div id="annCards"></div>
+
+            <div id="adminAnnForm" class="card hidden">
+              <label for="annTitle">Title</label>
+              <input id="annTitle" type="text" placeholder="Title">
+              <label for="annBody">Body</label>
+              <textarea id="annBody" placeholder="Details..."></textarea>
+              <div style="display:flex;gap:10px;margin-top:8px">
+                <button class="primary" onclick="postAnnouncement()">Add Announcement</button>
+                <button class="ghost" onclick="clearAnnForm()">Clear</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Material Requests -->
+          <section id="secRequests" class="section hidden">
+            <h3>Material Requests</h3>
+            <div id="reqCards"></div>
+
+            <!-- Operator submission -->
+            <div id="operatorReqForm" class="card hidden">
+              <label for="reqItem">Item / Description</label>
+              <input id="reqItem" type="text" placeholder="e.g. Filter element">
+              <label for="reqQty">Quantity</label>
+              <input id="reqQty" type="number" min="1" value="1">
+              <label for="reqNote">Notes</label>
+              <textarea id="reqNote" placeholder="Any notes..."></textarea>
+              <div style="display:flex;gap:10px;margin-top:8px">
+                <button class="primary" onclick="submitRequest()">Submit Request</button>
+                <button class="ghost" onclick="clearReqForm()">Clear</button>
+              </div>
+            </div>
+
+            <!-- Admin controls -->
+            <div id="adminReqControls" class="card hidden">
+              <div class="small">Admin quick actions</div>
+              <div style="display:flex;gap:10px;margin-top:8px">
+                <button class="primary" onclick="approveAll()">Approve all Requested</button>
+                <button class="ghost" onclick="setAllOutForDelivery()">Set all Out for Delivery</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Documents -->
+          <section id="secDocs" class="section hidden">
+            <h3>Document Status</h3>
+            <div id="docCards"></div>
+
+            <div id="adminDocForm" class="card hidden">
+              <label for="docName">Document name</label>
+              <input id="docName" type="text" placeholder="Permit / Report">
+              <label for="docStatus">Status</label>
+              <select id="docStatus">
+                <option>Pending</option>
+                <option>Submitted</option>
+                <option>Reviewed</option>
+                <option>Approved</option>
+              </select>
+              <div style="display:flex;gap:10px;margin-top:8px">
+                <button class="primary" onclick="addDocument()">Add / Update</button>
+                <button class="ghost" onclick="clearDocForm()">Clear</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Payslips -->
+          <section id="secPayslips" class="section hidden">
+            <h3>Payslip Requests</h3>
+            <div id="payslipCards"></div>
+
+            <!-- Operator payslip form -->
+            <div id="operatorPayslipForm" class="card hidden">
+              <label for="psMonth">Month</label>
+              <select id="psMonth">
+                <option value="">Select month</option>
+                <option>January</option><option>February</option><option>March</option><option>April</option>
+                <option>May</option><option>June</option><option>July</option><option>August</option>
+                <option>September</option><option>October</option><option>November</option><option>December</option>
+              </select>
+
+              <label for="psCutoff">Cut-off</label>
+              <select id="psCutoff">
+                <option value="">Select cut-off</option>
+                <option>1st</option>
+                <option>2nd</option>
+              </select>
+
+              <div style="display:flex;gap:10px;margin-top:8px">
+                <button class="primary" onclick="submitPayslip()">Request Payslip</button>
+                <button class="ghost" onclick="clearPayslipForm()">Clear</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Operators (admin only) -->
+          <section id="secOperators" class="section hidden">
+            <h3>Registered Operators</h3>
+            <div id="operatorList"></div>
+          </section>
+
+        </main>
+      </div>
+
+      <div class="footer">All rights reserved. Not for production use.</div>
+    </div>
+
+    <div class="footer" style="margin-top:18px">Est. 2025 Miraga Builders and Trading, Inc</div>
+  </div>
+
+<script>
+/* Keys */
+const USERS_KEY = 'stp_users_v6';
+const ACTIVE_KEY = 'stp_active_v6';
+const DATA_KEY = 'stp_data_v6';
+
+/* Admin credentials (fixed) */
+const ADMIN_EMAIL = 'jmonterona.miraga@gmail.com';
+const ADMIN_PW = 'jmonterona060801';
+
+/* Storage helpers */
+function loadUsers(){ try{return JSON.parse(localStorage.getItem(USERS_KEY)||'{}')}catch(e){return{}} }
+function saveUsers(u){ localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
+function setActive(e){ localStorage.setItem(ACTIVE_KEY, e); }
+function getActive(){ return localStorage.getItem(ACTIVE_KEY); }
+function loadData(){ try{return JSON.parse(localStorage.getItem(DATA_KEY)||'{"announcements":[],"requests":[],"documents":[],"payslips":[]}')}catch(e){return{"announcements":[],"requests":[],"documents":[],"payslips":[]}} }
+function saveData(d){ localStorage.setItem(DATA_KEY, JSON.stringify(d)); }
+
+/* Ensure admin exists and is exclusive */
+(function ensureAdmin(){
+  const users = loadUsers();
+  users[ADMIN_EMAIL] = { password: ADMIN_PW, role: 'admin', name: 'Admin' };
+  saveUsers(users);
+})();
+
+/* Ensure data shape */
+(function ensureData(){ const d = loadData(); saveData(d); })();
+
+/* UI refs */
+const tabLogin = document.getElementById('tabLogin');
+const tabRegister = document.getElementById('tabRegister');
+const panelLogin = document.getElementById('panelLogin');
+const panelRegister = document.getElementById('panelRegister');
+const authCard = document.getElementById('authCard');
+const appArea = document.getElementById('appArea');
+const sidebar = document.getElementById('sidebar');
+
+const navDashboard = document.getElementById('navDashboard');
+const navAnnouncements = document.getElementById('navAnnouncements');
+const navRequests = document.getElementById('navRequests');
+const navDocs = document.getElementById('navDocs');
+const navPayslips = document.getElementById('navPayslips');
+const navOperators = document.getElementById('navOperators');
+const navLogout = document.getElementById('navLogout');
+
+const welcomeEl = document.getElementById('welcome');
+const userBadge = document.getElementById('userBadge');
+const loginMsg = document.getElementById('loginMsg');
+const regMsg = document.getElementById('regMsg');
+
+/* Tabs */
+tabLogin.addEventListener('click', ()=> switchTab('login'));
+tabRegister.addEventListener('click', ()=> switchTab('register'));
+function switchTab(t){
+  if(t==='login'){
+    panelLogin.classList.remove('hidden'); panelRegister.classList.add('hidden');
+    tabLogin.setAttribute('aria-selected','true'); tabRegister.setAttribute('aria-selected','false');
+    tabLogin.classList.remove('dim'); tabRegister.classList.add('dim');
+  } else {
+    panelLogin.classList.add('hidden'); panelRegister.classList.remove('hidden');
+    tabLogin.setAttribute('aria-selected','false'); tabRegister.setAttribute('aria-selected','true');
+    tabLogin.classList.add('dim'); tabRegister.classList.remove('dim');
+  }
+}
+function switchToRegister(){ switchTab('register'); window.scrollTo({top:0,behavior:'smooth'}); }
+function switchToLogin(){ switchTab('login'); window.scrollTo({top:0,behavior:'smooth'}); }
+
+/* Auth */
+document.getElementById('loginForm').addEventListener('submit', handleLogin);
+document.getElementById('registerForm').addEventListener('submit', handleRegister);
+
+function handleLogin(e){
+  e.preventDefault();
+  loginMsg.textContent = '';
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pw = document.getElementById('loginPw').value;
+  if(!email || !pw){ loginMsg.textContent = 'Enter email & password'; return; }
+
+  if(email === ADMIN_EMAIL){
+    if(pw === ADMIN_PW){
+      setActive(ADMIN_EMAIL); afterSignIn(); loginMsg.textContent = 'Signed in as admin'; return;
+    } else { loginMsg.textContent = 'Incorrect admin password'; return; }
+  }
+
+  const users = loadUsers();
+  if(!users[email]){ loginMsg.textContent = 'No operator account found. Please register.'; return; }
+  if(users[email].password !== pw){ loginMsg.textContent = 'Incorrect password'; return; }
+
+  setActive(email); afterSignIn(); loginMsg.textContent = 'Signed in';
+}
+
+function handleRegister(e){
+  e.preventDefault();
+  regMsg.textContent = '';
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim().toLowerCase();
+  const pw = document.getElementById('regPw').value;
+  if(!name || !email || !pw){ regMsg.textContent = 'Enter full name, email & password'; return; }
+
+  if(email === ADMIN_EMAIL){ regMsg.textContent = 'Admin account is reserved and cannot be registered.'; return; }
+
+  const users = loadUsers();
+  if(users[email]){ regMsg.textContent = 'Account exists. Please login.'; return; }
+
+  users[email] = { password: pw, role: 'operator', name };
+  saveUsers(users);
+
+  regMsg.textContent = 'Operator account created successfully. Please sign in using the Login tab.';
+  document.getElementById('registerForm').reset();
+}
+
+/* After sign-in */
+function currentUser(){
+  const active = getActive();
+  if(!active) return null;
+  if(active === ADMIN_EMAIL) return { email: ADMIN_EMAIL, role: 'admin', name: 'Admin' };
+  const users = loadUsers();
+  if(users[active]) return { email: active, role: users[active].role, name: users[active].name };
+  return null;
+}
+
+function afterSignIn(){
+  const u = currentUser();
+  if(!u) return;
+  authCard.style.display = 'none';
+  appArea.style.display = 'block';
+  appArea.setAttribute('aria-hidden','false');
+  updateUserBadge();
+  configureForRole(u.role);
+  sidebar.classList.add('collapsed'); // collapsed by default
+  // default active nav
+  if(u.role === 'admin'){ setActiveNav(navDashboard); showDashboard(); }
+  else { setActiveNav(navAnnouncements); showAnnouncements(); }
+}
+
+/* Update UI */
+function updateUserBadge(){
+  const u = currentUser();
+  userBadge.innerHTML = u ? `<div class="badge">${escape(u.name || u.email)} (${escape(u.role)})</div>` : '';
+  welcomeEl.innerHTML = u ? `<div style="font-weight:700">Welcome — ${escape(u.name || u.email)}</div>` : '';
+}
+
+/* Configure role-specific UI elements (HIDE dashboard & operators for operators) */
+function configureForRole(role){
+  const isAdmin = role === 'admin';
+
+  // show/hide sidebar items
+  document.getElementById('navDashboard').style.display = isAdmin ? 'block' : 'none';
+  document.getElementById('navOperators').style.display = isAdmin ? 'block' : 'none';
+
+  // admin-only forms
+  document.getElementById('adminAnnForm').classList.toggle('hidden', !isAdmin);
+  document.getElementById('adminReqControls').classList.toggle('hidden', !isAdmin);
+  document.getElementById('adminDocForm').classList.toggle('hidden', !isAdmin);
+
+  // operator forms
+  document.getElementById('operatorReqForm').classList.toggle('hidden', isAdmin);
+  document.getElementById('operatorPayslipForm')?.classList.toggle('hidden', isAdmin);
+
+  // operators section visibility
+  document.getElementById('secOperators').classList.toggle('hidden', !isAdmin);
+}
+
+/* Sidebar navigation wiring */
+document.getElementById('toggleBtn').addEventListener('click', ()=> sidebar.classList.toggle('open'));
+navDashboard.addEventListener('click', ()=>{ setActiveNav(navDashboard); showDashboard(); });
+navAnnouncements.addEventListener('click', ()=>{ setActiveNav(navAnnouncements); showAnnouncements(); });
+navRequests.addEventListener('click', ()=>{ setActiveNav(navRequests); showRequests(); });
+navDocs.addEventListener('click', ()=>{ setActiveNav(navDocs); showDocs(); });
+navPayslips.addEventListener('click', ()=>{ setActiveNav(navPayslips); showPayslips(); });
+navOperators.addEventListener('click', ()=>{ setActiveNav(navOperators); showOperators(); });
+navLogout.addEventListener('click', logout);
+
+function setActiveNav(btn){
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+/* Logout */
+function logout(){ localStorage.removeItem(ACTIVE_KEY); location.reload(); }
+
+/* Helpers */
+function escape(s){ if(!s) return ''; return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+/* Data helpers */
+function getData(){ return loadData(); }
+function saveAll(d){ saveData(d); }
+
+/* DASHBOARD (admin only) */
+function showDashboard(){ hideAllSections(); document.getElementById('secDashboard').classList.remove('hidden'); renderDashboard(); }
+function renderDashboard(){
+  const d = getData();
+  const users = loadUsers();
+  document.getElementById('kpiAnnouncements').textContent = d.announcements.length;
+  document.getElementById('kpiRequests').textContent = d.requests.length;
+  document.getElementById('kpiDocs').textContent = d.documents.length;
+  document.getElementById('kpiPayslips').textContent = d.payslips.length;
+  document.getElementById('kpiOperators').textContent = Object.values(users).filter(u=>u.role==='operator').length;
+
+  const byStatus = d.requests.reduce((acc,r)=> { acc[r.status] = (acc[r.status]||0)+1; return acc; }, {});
+  document.getElementById('dashboardDetails').innerHTML = `<div class="card"><div><strong>Requests by status</strong></div><div class="small">Requested: ${byStatus['Requested']||0} • Approved: ${byStatus['Approved']||0} • Out for Delivery: ${byStatus['Out for Delivery']||0}</div></div>`;
+}
+
+/* ANNOUNCEMENTS */
+function showAnnouncements(){ hideAllSections(); document.getElementById('secAnnouncements').classList.remove('hidden'); renderAnnouncements(); }
+function postAnnouncement(){
+  const title = (document.getElementById('annTitle').value||'').trim();
+  const body = (document.getElementById('annBody').value||'').trim();
+  if(!title && !body){ alert('Enter title or body'); return; }
+  const d = getData(); d.announcements.unshift({ id: Date.now(), title, body, author: getActive(), ts: new Date().toISOString() }); saveAll(d);
+  document.getElementById('annTitle').value=''; document.getElementById('annBody').value=''; renderAnnouncements();
+}
+function renderAnnouncements(){
+  const d = getData(); const container = document.getElementById('annCards'); container.innerHTML = '';
+  if(!d.announcements.length){ container.innerHTML = '<div class="item small">No announcements yet.</div>'; return; }
+  d.announcements.forEach(a=>{
+    const el = document.createElement('div'); el.className='item';
+    el.innerHTML = `<div style="font-weight:700">${escape(a.title||'Untitled')}</div><div class="small">${new Date(a.ts).toLocaleString()} • ${escape(a.author||'')}</div><div style="margin-top:8px">${escape(a.body)}</div>${ currentUser() && currentUser().role==='admin' ? `<div style="margin-top:8px"><button class="ghost" onclick="removeAnnouncement(${a.id})">Remove</button></div>` : '' }`;
+    container.appendChild(el);
+  });
+}
+window.removeAnnouncement = function(id){ if(!confirm('Remove announcement?')) return; const d=getData(); d.announcements = d.announcements.filter(x=>x.id!==id); saveAll(d); renderAnnouncements(); }
+
+/* MATERIAL REQUESTS */
+function showRequests(){ hideAllSections(); document.getElementById('secRequests').classList.remove('hidden'); renderRequests(); }
+function submitRequest(){
+  const item = (document.getElementById('reqItem').value||'').trim();
+  const qty = parseInt(document.getElementById('reqQty').value) || 1;
+  const note = (document.getElementById('reqNote').value||'').trim();
+  if(!item){ alert('Enter item'); return; }
+  const d = getData(); d.requests.unshift({ id: Date.now(), item, qty, note, by: getActive(), status: 'Requested', ts: new Date().toISOString() }); saveAll(d);
+  clearReqForm(); renderRequests();
+}
+function renderRequests(){
+  const d = getData(); const container = document.getElementById('reqCards'); container.innerHTML = '';
+  if(!d.requests.length){ container.innerHTML = '<div class="item small">No requests yet.</div>'; return; }
+  d.requests.forEach(r=>{
+    const el = document.createElement('div'); el.className='item';
+    let controls = '';
+    const user = currentUser();
+    if(user && user.role === 'admin'){
+      controls = `<div style="margin-top:8px" class="row"><div><select class="select-inline" onchange="changeReqStatus(${r.id}, this.value)"><option ${r.status==='Requested'?'selected':''}>Requested</option><option ${r.status==='Approved'?'selected':''}>Approved</option><option ${r.status==='Out for Delivery'?'selected':''}>Out for Delivery</option></select></div><div><button class="ghost" onclick="removeRequest(${r.id})">Remove</button></div></div>`;
+    } else {
+      controls = `<div class="small">Status: <strong>${escape(r.status)}</strong></div>`;
+    }
+    el.innerHTML = `<div style="font-weight:700">${escape(r.item)}</div><div class="small">Qty: ${escape(String(r.qty))} • Requested by: ${escape(r.by)} • ${new Date(r.ts).toLocaleString()}</div><div style="margin-top:8px">${escape(r.note||'')}</div>${controls}`;
+    container.appendChild(el);
+  });
+}
+window.changeReqStatus = function(id, value){ const d=getData(); d.requests = d.requests.map(r=> r.id===id?Object.assign({},r,{status:value}):r); saveAll(d); renderRequests(); renderDashboard(); }
+window.removeRequest = function(id){ if(!confirm('Remove request?')) return; const d=getData(); d.requests = d.requests.filter(r=> r.id!==id); saveAll(d); renderRequests(); renderDashboard(); }
+function approveAll(){ if(!confirm('Approve all Requested requests?')) return; const d=getData(); d.requests.forEach(r=>{ if(r.status==='Requested') r.status='Approved'; }); saveAll(d); renderRequests(); renderDashboard(); }
+function setAllOutForDelivery(){ if(!confirm('Set all Approved to Out for Delivery?')) return; const d=getData(); d.requests.forEach(r=>{ if(r.status==='Approved') r.status='Out for Delivery'; }); saveAll(d); renderRequests(); renderDashboard(); }
+
+/* DOCUMENTS */
+function showDocs(){ hideAllSections(); document.getElementById('secDocs').classList.remove('hidden'); renderDocuments(); }
+function addDocument(){ const name=(document.getElementById('docName').value||'').trim(); const status=document.getElementById('docStatus').value; if(!name){ alert('Enter document name'); return; } const d=getData(); d.documents.unshift({ id:Date.now(), name, status, author:getActive(), ts:new Date().toISOString() }); saveAll(d); document.getElementById('docName').value=''; renderDocuments(); }
+function renderDocuments(){ const d=getData(); const container=document.getElementById('docCards'); container.innerHTML=''; if(!d.documents.length){ container.innerHTML='<div class="item small">No documents tracked.</div>'; return; } d.documents.forEach(doc=>{ const el=document.createElement('div'); el.className='item'; el.innerHTML=`<div style="font-weight:700">${escape(doc.name)}</div><div class="small">Status: ${escape(doc.status)} • ${new Date(doc.ts).toLocaleString()}</div>${ currentUser() && currentUser().role==='admin' ? `<div style="margin-top:8px"><button class="ghost" onclick="removeDocument(${doc.id})">Remove</button></div>` : '' }`; container.appendChild(el); }); }
+window.removeDocument = function(id){ if(!confirm('Remove document?')) return; const d=getData(); d.documents = d.documents.filter(x=> x.id!==id); saveAll(d); renderDocuments(); }
+
+/* PAYSLIPS */
+function showPayslips(){ hideAllSections(); document.getElementById('secPayslips').classList.remove('hidden'); renderPayslips(); }
+function submitPayslip(){ const month=document.getElementById('psMonth').value; const cutoff=document.getElementById('psCutoff').value; if(!month || !cutoff){ alert('Select month and cut-off'); return; } const d=getData(); const u=currentUser(); d.payslips.unshift({ id:Date.now(), name:(u && u.name)||'', email:getActive(), month, cutoff, status:'Pending', ts:new Date().toISOString() }); saveAll(d); clearPayslipForm(); renderPayslips(); }
+function renderPayslips(){ const d=getData(); const container=document.getElementById('payslipCards'); container.innerHTML=''; if(!d.payslips.length){ container.innerHTML='<div class="item small">No payslip requests.</div>'; return; } d.payslips.forEach(p=>{ const el=document.createElement('div'); el.className='item'; let controls=''; const user=currentUser(); if(user && user.role==='admin'){ controls = `<div style="margin-top:8px" class="row"><div><select class="select-inline" onchange="changePayslipStatus(${p.id}, this.value)"><option ${p.status==='Pending'?'selected':''}>Pending</option><option ${p.status==='Approved'?'selected':''}>Approved</option><option ${p.status==='Ready for Pickup'?'selected':''}>Ready for Pickup</option></select></div><div><button class="ghost" onclick="removePayslip(${p.id})">Remove</button></div></div>`; } else { controls = `<div class="small">Status: <strong>${escape(p.status)}</strong></div>`; } el.innerHTML = `<div style="font-weight:700">${escape(p.name || p.email)}</div><div class="small">${escape(p.email)} • ${escape(p.month)} • Cut-off: ${escape(p.cutoff)} • ${new Date(p.ts).toLocaleString()}</div>${controls}`; container.appendChild(el); }); }
+window.changePayslipStatus = function(id, value){ const d=getData(); d.payslips = d.payslips.map(p=> p.id===id?Object.assign({},p,{status:value}):p); saveAll(d); renderPayslips(); }
+window.removePayslip = function(id){ if(!confirm('Remove payslip request?')) return; const d=getData(); d.payslips = d.payslips.filter(p=>p.id!==id); saveAll(d); renderPayslips(); }
+
+/* OPERATORS LIST (admin only) */
+function showOperators(){ hideAllSections(); document.getElementById('secOperators').classList.remove('hidden'); renderOperators(); }
+function renderOperators(){ const users=loadUsers(); const container=document.getElementById('operatorList'); container.innerHTML=''; const opEntries=Object.entries(users).filter(([email,u])=> u.role==='operator'); if(!opEntries.length){ container.innerHTML='<div class="item small">No registered operators.</div>'; return; } opEntries.forEach(([email,u])=>{ const el=document.createElement('div'); el.className='item'; el.innerHTML=`<div style="font-weight:700">${escape(u.name)}</div><div class="small">${escape(email)}</div><div style="margin-top:8px"><button class="ghost" onclick="removeOperator('${email}')">Remove</button></div>`; container.appendChild(el); }); }
+window.removeOperator = function(email){ if(!confirm('Remove operator account?')) return; const users = loadUsers(); delete users[email]; saveUsers(users); renderOperators(); renderDashboard(); }
+
+/* small helpers */
+function hideAllSections(){ document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden')); }
+function clearAnnForm(){ document.getElementById('annTitle').value=''; document.getElementById('annBody').value=''; }
+function clearReqForm(){ document.getElementById('reqItem').value=''; document.getElementById('reqQty').value='1'; document.getElementById('reqNote').value=''; }
+function clearDocForm(){ document.getElementById('docName').value=''; document.getElementById('docStatus').selectedIndex=0; }
+function clearPayslipForm(){ document.getElementById('psMonth').selectedIndex=0; document.getElementById('psCutoff').selectedIndex=0; }
+
+/* Boot */
+(function init(){
+  document.querySelectorAll('.nav button').forEach(btn=>{ btn.addEventListener('click', ()=>{ document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }); });
+  document.getElementById('toggleBtn').addEventListener('click', ()=> sidebar.classList.toggle('open'));
+  const active = getActive();
+  if(active){ afterSignIn(); } else { authCard.style.display='block'; appArea.style.display='none'; switchTab('login'); }
+})();
+</script>
+</body>
+</html>
