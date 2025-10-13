@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>STP Operators Workspace — Firebase</title>
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --white:#ffffff;
+  --bg:#f4f6f7;
+  --muted:#eef1f2;
+  --soft:#6b7280;
+  --green:#2f855a;
+  --brown:#6b4c3b;
+  --radius:12px;
+  --shadow:0 10px 28px rgba(20,20,20,0.06);
+  --maxw:1100px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:"Acumin Pro","Montserrat",system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+  background:var(--bg);
+  color:var(--brown);
+  display:flex;
+  justify-content:center;
+  padding:28px;
+}
+
+/* container & header */
+.container{width:100%;max-width:var(--maxw)}
+.header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--brown));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+h1{font-family:"Montserrat",sans-serif;margin:0;font-size:1.05rem}
+.tag{color:var(--soft);font-size:0.9rem}
+
+/* auth card */
+.auth-card{margin:20px auto 0;background:var(--white);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.tab-row{display:flex}
+.tab{flex:1;padding:14px;text-align:center;font-weight:700;color:#fff;cursor:pointer;user-select:none}
+.tab.login{background:var(--green)} .tab.register{background:var(--green)}
+.tab.dim{opacity:0.9}
+.panel{padding:20px;animation:fade .35s}
+.hidden{display:none}
+label{display:block;margin-top:10px;font-size:0.95rem}
+input,textarea,select,button{width:100%;padding:10px;margin-top:8px;border-radius:10px;border:1px solid #ddd;font-family:inherit}
+textarea{min-height:90px;resize:vertical}
+button.primary{background:var(--green);color:#fff;border:0;font-weight:700;padding:10px 12px;border-radius:10px;cursor:pointer}
+button.ghost{background:transparent;border:1px solid #d5d7d8;padding:9px;border-radius:10px;cursor:pointer}
+.note{color:var(--soft);font-size:0.95rem;margin-top:8px}
+.success{color:var(--green);font-weight:700;margin-top:8px}
+.small{font-size:0.9rem;color:var(--soft)}
+
+@keyframes fade{from{opacity:0}to{opacity:1}}
+
+/* app layout */
+.app{display:none;margin-top:18px}
+.layout{display:grid;grid-template-columns:260px 1fr;gap:20px}
+@media(max-width:900px){ .layout{grid-template-columns:1fr} }
+
+/* sidebar */
+.sidebar{background:var(--white);color:black;border-radius:12px;padding:12px;min-height:60vh;transition:transform .28s ease;position:relative}
+.sidebar.collapsed{transform:translateX(-1%)}
+.brand-mini{display:flex;gap:10px;align-items:center;padding:6px 0}
+.nav{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+.nav button{background:transparent;border:0;color:inherit;padding:10px 12px;text-align:left;border-radius:8px;cursor:pointer;font-weight:700}
+.nav button.active{background:linear-gradient(90deg,var(--green),var(--brown));color:white}
+.nav button:focus{outline:3px solid rgba(47,133,90,0.18)}
+
+/* main */
+.main{background:var(--white);border-radius:12px;padding:18px;box-shadow:var(--shadow)}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+.toggle{background:var(--green);color:white;border:0;padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:700}
+.section{margin-top:12px}
+.card{background:var(--muted);padding:12px;border-radius:10px;border:1px solid #eee;margin-bottom:12px}
+.item{background:var(--white);padding:12px;border-radius:10px;border:1px solid #eee;margin-bottom:10px}
+.kpi-row{display:flex;gap:12px;margin-top:12px}
+.kpi{flex:1;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfbfb);box-shadow:0 4px 10px rgba(0,0,0,0.04);border:1px solid #eee}
+.kpi strong{display:block;font-size:1.2rem}
+.footer{margin-top:18px;color:var(--soft);text-align:center;font-size:0.9rem}
+.row{display:flex;gap:10px;align-items:center}
+.select-inline{width:auto;padding:8px;border-radius:8px;border:1px solid #ddd}
+.badge{padding:6px 10px;border-radius:999px;background:var(--muted);font-weight:700}
+</style>
+</head>
+<body>
+  <div class="container" role="application">
+    <div class="header">
+      <div class="brand" aria-hidden="true">
+        <div class="logo">STP</div>
+        <div>
+          <h1>Miraga STP Operators Workspace</h1>
+          <div class="tag">Announcements · Material Requests · Documents · Payslips</div>
+        </div>
+      </div>
+      <div id="userBadge" aria-live="polite"></div>
+    </div>
+
+    <!-- AUTH -->
+    <div class="auth-card" id="authCard" aria-labelledby="authTitle">
+      <div class="tab-row" role="tablist">
+        <div id="tabLogin" class="tab login" role="tab" aria-selected="true">Login</div>
+        <div id="tabRegister" class="tab register dim" role="tab" aria-selected="false">Register</div>
+      </div>
+
+      <div id="panelLogin" class="panel">
+        <h2 id="authTitle" style="margin:0 0 6px 0">Sign in</h2>
+        <div class="note">Sign in your account. Don't have an account? Sign up below.</div>
+
+        <form id="loginForm">
+          <label for="loginEmail">Email</label>
+          <input id="loginEmail" type="email" autocomplete="username" required>
+
+          <label for="loginPw">Password</label>
+          <input id="loginPw" type="password" autocomplete="current-password" minlength="6" required>
+
+          <div style="display:flex;gap:10px;margin-top:12px">
+            <button class="primary" type="submit">Sign in</button>
+            <button type="button" class="ghost" id="gotoRegisterBtn">Create account</button>
+          </div>
+          <div id="loginMsg" class="small" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+
+      <div id="panelRegister" class="panel hidden" aria-hidden="true">
+        <h2 style="margin:0 0 6px 0">Operator Registration</h2>
+        <div class="note">Operators create accounts here. After registering you remain on this tab and see a success message.</div>
+
+        <form id="registerForm">
+          <label for="regName">Full name</label>
+          <input id="regName" type="text" required>
+
+          <label for="regEmail">Email</label>
+          <input id="regEmail" type="email" autocomplete="email" required>
+
+          <label for="regPw">Password (min 6 chars)</label>
+          <input id="regPw" type="password" minlength="6" required>
+
+          <div style="display:flex;gap:10px;margin-top:12px">
+            <button class="primary" id="registerBtn" type="submit">Register</button>
+            <button type="button" class="ghost" id="backToLoginBtn">Back to login</button>
+          </div>
+          <div id="regMsg" class="success" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- App -->
+    <div class="app" id="appArea" aria-hidden="true">
+      <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar collapsed" id="sidebar" aria-label="Main sidebar">
+          <div class="brand-mini" style="padding-bottom:8px">
+            <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--green));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">W</div>
+            <div style="font-weight:700">Workspace</div>
+          </div>
+
+          <nav class="nav" aria-label="Workspace navigation">
+            <button id="navDashboard">Dashboard</button>
+            <button id="navAnnouncements">Announcements</button>
+            <button id="navRequests">Material Requests</button>
+            <button id="navDocs">Document Status</button>
+            <button id="navPayslips">Payslip Requests</button>
+            <button id="navOperators">Operators</button>
+            <button id="navLogout">Logout</button>
+          </nav>
+
+          <div style="position:absolute;bottom:12px;left:12px;font-size:0.9rem;color:rgba(255,255,255,0.85)">&copy; STP</div>
+        </aside>
+
+        <!-- Main -->
+        <main class="main" id="main">
+          <div class="topbar">
+            <div id="welcome"></div>
+            <div>
+              <button class="toggle" id="toggleBtn">☰ Menu</button>
+            </div>
+          </div>
+
+          <!-- Dashboard (admin-only) -->
+          <section id="secDashboard" class="section hidden">
+            <h3>Dashboard</h3>
+            <div class="kpi-row">
+              <div class="kpi"><strong id="kpiAnnouncements">0</strong>Announcements</div>
+              <div class="kpi"><strong id="kpiRequests">0</strong>Total Requests</div>
+              <div class="kpi"><strong id="kpiDocs">0</strong>Documents</div>
+              <div class="kpi"><strong id="kpiPayslips">0</strong>Payslip Requests</div>
+              <div class="kpi"><strong id="kpiOperators">0</strong>Operators</div>
+            </div>
+            <div style="margin-top:12px" id="dashboardDetails"></div>
+          </section>
+
+          <!-- Announcements -->
+          <section id="secAnnouncements" class="section hidden">
+            <h3>Announcements</h3>
+            <div id="annCards"></div>
+
+            <div id="adminAnnForm" class="card hidden">
+              <label for="annTitle">Title</label>
+              <input id="annTitle" type="text" placeholder="Title">
+              <label for="annBody">Body</label>
+              <textarea id="annBody" placeholder="Details..."></textarea>
+              <div style="display:flex;gap:10px;margin-top:8px">
+                <button class="primary" id="postAnnBtn">Add Announcement</button>
+                <button class="ghost" id="clearAnnBtn">Clear</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Material Requests -->
+          <section id="secRequests" class="section hidden">
+            <h3>Material Requests</h3>
+            <div id="reqCards"></div>
+
+            <div id="operatorReqForm" class="card hidden">
+              <label for="reqItem">Item / Description</label>
+              <input id="reqItem" type="text" placeholder="e.g. Filter element">
+              <label for="reqQty">Quantity</label>
+              <input id="reqQty" type="number" min="1" value="1">
+              <label for="reqNote">Notes</label>
+              <textarea id="reqNote" placeholder="Any notes..."></textarea>
+              <div style="display:flex;gap:10px;margin-top:8px">
+                <button class="primary" id="submitReqBtn">Submit Request</button>
+                <button class="ghost" id="clearReqBtn">Clear</button>
+              </div>
+            </div>
+
+            <div id="adminReqControls" class="card hidden">
+              <div class="small">Admin quick actions</div>
+              <div style="display:flex;gap:10px;margin-top:8px">
+                <button class="primary" id="approveAllBtn">Approve all Requested</button>
+                <button class="ghost" id="outForDeliveryAllBtn">Set all Out for Delivery</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Documents -->
+          <section id="secDocs" class="section hidden">
+            <h3>Document Status</h3>
+            <div id="docCards"></div>
+
+            <div id="adminDocForm" class="card hidden">
+              <label for="docName">Document name</label>
+              <input id="docName" type="text" placeholder="Permit / Report">
+              <label for="docStatus">Status</label>
+              <select id="docStatus"><option>Pending</option><option>Submitted</option><option>Reviewed</option><option>Approved</option></select>
+              <div style="display:flex;gap:10px;margin-top:8px">
+                <button class="primary" id="addDocBtn">Add / Update</button>
+                <button class="ghost" id="clearDocBtn">Clear</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Payslips -->
+          <section id="secPayslips" class="section hidden">
+            <h3>Payslip Requests</h3>
+            <div id="payslipCards"></div>
+
+            <div id="operatorPayslipForm" class="card hidden">
+              <label for="psMonth">Month</label>
+              <select id="psMonth">
+                <option value="">Select month</option>
+                <option>January</option><option>February</option><option>March</option><option>April</option>
+                <option>May</option><option>June</option><option>July</option><option>August</option>
+                <option>September</option><option>October</option><option>November</option><option>December</option>
+              </select>
+              <label for="psCutoff">Cut-off</label>
+              <select id="psCutoff"><option value="">Select cut-off</option><option>1st</option><option>2nd</option></select>
+              <div style="display:flex;gap:10px;margin-top:8px">
+                <button class="primary" id="submitPayslipBtn">Request Payslip</button>
+                <button class="ghost" id="clearPayslipBtn">Clear</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Operators (admin only) -->
+          <section id="secOperators" class="section hidden">
+            <h3>Registered Operators</h3>
+            <div id="operatorList"></div>
+          </section>
+
+        </main>
+      </div>
+
+      <div class="footer">All rights reserved.</div>
+    </div>
+
+    <div class="footer" style="margin-top:18px">Est. 2025 Miraga Builders and Trading, Inc</div>
+  </div>
+
+<!-- Firebase SDK (modular v9) -->
+<script type="module">
+  // ----------------------------
+  // 1) Firebase SDK - replace config below
+  // ----------------------------
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+  import { getDatabase, ref, push, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+  // TODO: Replace with your Firebase config (from Firebase Console -> Project Settings -> Your apps -> Web)
+  const firebaseConfig = {
+    apiKey: "AIzaSyBM6K8zz8WNYtU7NHRMKp-qrVCWoxU8hGw",
+    authDomain: "workspace-1cf42.firebaseapp.com",
+    projectId: "workspace-1cf42",
+    storageBucket: "workspace-1cf42.firebasestorage.app",
+    messagingSenderId: "113015937389",
+    appId: "1:113015937389:web:a75cfaf9f767fd4e90e264",
+    measurementId: "G-NHGX7PKSSV"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+
+  // ----------------------------
+  // 2) Fixed Admin (exclusive)
+  // ----------------------------
+  const ADMIN_EMAIL = 'jmonterona.miraga@gmail.com';
+  const ADMIN_PW = 'jmonterona060801';
+
+  // ----------------------------
+  // 3) Helpers & UI refs
+  // ----------------------------
+  const authCard = document.getElementById('authCard');
+  const appArea = document.getElementById('appArea');
+  const sidebar = document.getElementById('sidebar');
+
+  const tabLogin = document.getElementById('tabLogin');
+  const tabRegister = document.getElementById('tabRegister');
+  const panelLogin = document.getElementById('panelLogin');
+  const panelRegister = document.getElementById('panelRegister');
+  const gotoRegisterBtn = document.getElementById('gotoRegisterBtn');
+  const backToLoginBtn = document.getElementById('backToLoginBtn');
+
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
+  const loginMsg = document.getElementById('loginMsg');
+  const regMsg = document.getElementById('regMsg');
+
+  const welcomeEl = document.getElementById('welcome');
+  const userBadge = document.getElementById('userBadge');
+
+  // nav
+  const navDashboard = document.getElementById('navDashboard');
+  const navAnnouncements = document.getElementById('navAnnouncements');
+  const navRequests = document.getElementById('navRequests');
+  const navDocs = document.getElementById('navDocs');
+  const navPayslips = document.getElementById('navPayslips');
+  const navOperators = document.getElementById('navOperators');
+  const navLogout = document.getElementById('navLogout');
+
+  // elements for lists & forms
+  const kpiAnnouncements = document.getElementById('kpiAnnouncements');
+  const kpiRequests = document.getElementById('kpiRequests');
+  const kpiDocs = document.getElementById('kpiDocs');
+  const kpiPayslips = document.getElementById('kpiPayslips');
+  const kpiOperators = document.getElementById('kpiOperators');
+  const dashboardDetails = document.getElementById('dashboardDetails');
+
+  const annCards = document.getElementById('annCards');
+  const postAnnBtn = document.getElementById('postAnnBtn');
+  const clearAnnBtn = document.getElementById('clearAnnBtn');
+
+  const reqCards = document.getElementById('reqCards');
+  const submitReqBtn = document.getElementById('submitReqBtn');
+  const clearReqBtn = document.getElementById('clearReqBtn');
+
+  const docCards = document.getElementById('docCards');
+  const addDocBtn = document.getElementById('addDocBtn');
+  const clearDocBtn = document.getElementById('clearDocBtn');
+
+  const payslipCards = document.getElementById('payslipCards');
+  const submitPayslipBtn = document.getElementById('submitPayslipBtn');
+  const clearPayslipBtn = document.getElementById('clearPayslipBtn');
+
+  const operatorList = document.getElementById('operatorList');
+
+  // forms fields
+  const annTitle = document.getElementById('annTitle');
+  const annBody = document.getElementById('annBody');
+
+  const reqItem = document.getElementById('reqItem');
+  const reqQty = document.getElementById('reqQty');
+  const reqNote = document.getElementById('reqNote');
+
+  const docName = document.getElementById('docName');
+  const docStatus = document.getElementById('docStatus');
+
+  const psMonth = document.getElementById('psMonth');
+  const psCutoff = document.getElementById('psCutoff');
+
+  // other
+  const toggleBtn = document.getElementById('toggleBtn');
+
+  // current user info
+  let currentUser = null; // { uid, email, name, role } or admin marker { role: 'admin' }
+
+  // ----------------------------
+  // 4) Auth / Registration
+  // ----------------------------
+  // Tabs
+  tabLogin.addEventListener('click', ()=> switchTab('login'));
+  tabRegister.addEventListener('click', ()=> switchTab('register'));
+  gotoRegisterBtn.addEventListener('click', ()=> switchTab('register'));
+  backToLoginBtn.addEventListener('click', ()=> switchTab('login'));
+
+  function switchTab(t){
+    if(t==='login'){ panelLogin.classList.remove('hidden'); panelRegister.classList.add('hidden'); tabLogin.classList.remove('dim'); tabRegister.classList.add('dim'); }
+    else { panelLogin.classList.add('hidden'); panelRegister.classList.remove('hidden'); tabLogin.classList.add('dim'); tabRegister.classList.remove('dim'); }
+    loginMsg.textContent=''; regMsg.textContent='';
+  }
+
+  // Register operator (Firebase Auth)
+  registerForm.addEventListener('submit', async (evt)=>{
+    evt.preventDefault();
+    regMsg.textContent = '';
+    const name = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim().toLowerCase();
+    const pw = document.getElementById('regPw').value;
+    if(!name || !email || !pw){ regMsg.textContent = 'Enter full name, email & password'; return; }
+    if(email === ADMIN_EMAIL){ regMsg.textContent = 'Admin account is reserved and cannot be registered.'; return; }
+
+    try{
+      const credential = await createUserWithEmailAndPassword(auth, email, pw);
+      const uid = credential.user.uid;
+      // store operator details in realtime db at /users/{uid}
+      await set(ref(db, 'users/' + uid), { name, email, role: 'operator', createdAt: Date.now() });
+      regMsg.textContent = 'Operator account created successfully. Please sign in using the Login tab.';
+      registerForm.reset();
+    } catch(err){
+      console.error(err); regMsg.textContent = err.message || 'Registration failed';
+    }
+  });
+
+  // Login (either admin fixed or operator via Firebase Auth)
+  loginForm.addEventListener('submit', async (evt)=>{
+    evt.preventDefault();
+    loginMsg.textContent = '';
+    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+    const pw = document.getElementById('loginPw').value;
+    if(!email || !pw){ loginMsg.textContent = 'Enter email & password'; return; }
+
+    // Admin fixed login
+    if(email === ADMIN_EMAIL){
+      if(pw === ADMIN_PW){
+        currentUser = { role: 'admin', email: ADMIN_EMAIL, name: 'Admin' };
+        openWorkspace();
+        loginMsg.textContent = 'Signed in as admin';
+        return;
+      } else { loginMsg.textContent = 'Incorrect admin password'; return; }
+    }
+
+    // Operator login via Firebase Auth
+    try{
+      const credential = await signInWithEmailAndPassword(auth, email, pw);
+      const uid = credential.user.uid;
+      // fetch details from /users/{uid}
+      const userRef = ref(db, 'users/' + uid);
+      onValue(userRef, snapshot => {
+        const val = snapshot.val();
+        currentUser = { uid, email, name: val?.name || email, role: val?.role || 'operator' };
+        openWorkspace();
+      }, { onlyOnce: true });
+    } catch(err){
+      console.error(err);
+      loginMsg.textContent = 'Authentication failed: ' + (err.message || '');
+    }
+  });
+
+  // Logout
+  navLogout.addEventListener('click', async ()=>{
+    // If operator logged in via Firebase Auth, sign them out
+    if(currentUser && currentUser.role === 'operator'){
+      try{ await signOut(auth); }catch(e){ console.warn(e); }
+    }
+    currentUser = null;
+    // hide app, show auth
+    appArea.style.display = 'none';
+    authCard.style.display = 'block';
+    switchTab('login');
+  });
+
+  // ----------------------------
+  // 5) Open workspace & configure role UI
+  // ----------------------------
+  function openWorkspace(){
+    authCard.style.display = 'none';
+    appArea.style.display = 'block';
+    updateUserBadge();
+    configureRoleUI();
+    // collapse sidebar default
+    sidebar.classList.add('collapsed');
+    // attach listeners to DB for realtime updates
+    attachRealtimeListeners();
+    // default view
+    if(currentUser.role === 'admin'){ showDashboard(); setActiveNav(navDashboard); }
+    else { showAnnouncements(); setActiveNav(navAnnouncements); }
+  }
+
+  function updateUserBadge(){
+    userBadge.innerHTML = currentUser ? `<div class="badge">${escape(currentUser.name || currentUser.email)} (${escape(currentUser.role)})</div>` : '';
+    welcomeEl.innerHTML = currentUser ? `<div style="font-weight:700">Welcome — ${escape(currentUser.name || currentUser.email)}</div>` : '';
+  }
+
+  function configureRoleUI(){
+    const isAdmin = currentUser && currentUser.role === 'admin';
+    // show/hide nav items for non-admin
+    navDashboard.style.display = isAdmin ? 'block' : 'none';
+    navOperators.style.display = isAdmin ? 'block' : 'none';
+
+    // show/hide form sections
+    document.getElementById('adminAnnForm').classList.toggle('hidden', !isAdmin);
+    document.getElementById('adminReqControls').classList.toggle('hidden', !isAdmin);
+    document.getElementById('adminDocForm').classList.toggle('hidden', !isAdmin);
+    document.getElementById('operatorReqForm').classList.toggle('hidden', isAdmin);
+    document.getElementById('operatorPayslipForm').classList.toggle('hidden', isAdmin);
+    document.getElementById('secOperators').classList.toggle('hidden', !isAdmin);
+  }
+
+  // ----------------------------
+  // 6) Realtime listeners
+  // ----------------------------
+  let listeners = [];
+  function clearListeners(){
+    // onValue returns an unsubscribing function when used with off? Using onValue cannot be easily turned off here without keeping refs.
+    // For simplicity, not unsubscribing; in single-page use it's fine. If you want to, keep refs and call off().
+  }
+
+  function attachRealtimeListeners(){
+    // announcements
+    const annRef = ref(db, 'announcements');
+    onValue(annRef, snapshot => {
+      const val = snapshot.val() || {};
+      renderAnnouncements(val);
+      renderDashboardCounts();
+    });
+
+    // materials
+    const matRef = ref(db, 'materials');
+    onValue(matRef, snapshot => {
+      const val = snapshot.val() || {};
+      renderMaterials(val);
+      renderDashboardCounts();
+    });
+
+    // documents
+    const docRef = ref(db, 'documents');
+    onValue(docRef, snapshot => {
+      const val = snapshot.val() || {};
+      renderDocuments(val);
+      renderDashboardCounts();
+    });
+
+    // payslips
+    const payRef = ref(db, 'payslips');
+    onValue(payRef, snapshot => {
+      const val = snapshot.val() || {};
+      renderPayslips(val);
+      renderDashboardCounts();
+    });
+
+    // users (operators list)
+    const usersRef = ref(db, 'users');
+    onValue(usersRef, snapshot => {
+      const val = snapshot.val() || {};
+      renderOperators(val);
+      renderDashboardCounts();
+    });
+  }
+
+  // ----------------------------
+  // 7) Announcements (admin adds)
+  // ----------------------------
+  postAnnBtn.addEventListener('click', async ()=>{
+    const titleVal = annTitle.value.trim();
+    const bodyVal = annBody.value.trim();
+    if(!titleVal && !bodyVal){ alert('Enter title or body'); return; }
+    const newRef = push(ref(db, 'announcements'));
+    await set(newRef, { id: newRef.key, title: titleVal, body: bodyVal, author: currentUser.email, ts: Date.now() });
+    annTitle.value=''; annBody.value='';
+  });
+  clearAnnBtn.addEventListener('click', ()=>{ annTitle.value=''; annBody.value=''; });
+
+  function renderAnnouncements(obj){
+    annCards.innerHTML = '';
+    const entries = Object.values(obj).sort((a,b)=> b.ts - a.ts);
+    if(!entries.length){ annCards.innerHTML = '<div class="item small">No announcements yet.</div>'; return; }
+    entries.forEach(a=>{
+      const div = document.createElement('div'); div.className='item';
+      div.innerHTML = `<div style="font-weight:700">${escape(a.title||'Untitled')}</div>
+                       <div class="small">${new Date(a.ts).toLocaleString()} • ${escape(a.author||'')}</div>
+                       <div style="margin-top:8px">${escape(a.body)}</div>
+                       ${currentUser && currentUser.role==='admin' ? `<div style="margin-top:8px"><button class="ghost" onclick="removeAnnouncement('${a.id}')">Remove</button></div>` : ''}`;
+      annCards.appendChild(div);
+    });
+  }
+  window.removeAnnouncement = async (id)=>{
+    if(!confirm('Remove announcement?')) return;
+    await remove(ref(db, 'announcements/' + id));
+  };
+
+  // ----------------------------
+  // 8) Materials (requests)
+  // ----------------------------
+  submitReqBtn.addEventListener('click', async ()=>{
+    const itemVal = reqItem.value.trim();
+    const qtyVal = parseInt(reqQty.value) || 1;
+    const noteVal = reqNote.value.trim();
+    if(!itemVal){ alert('Enter item'); return; }
+    const newRef = push(ref(db, 'materials'));
+    await set(newRef, { id: newRef.key, item: itemVal, qty: qtyVal, note: noteVal, by: currentUser.email, uid: currentUser.uid || null, status: 'Requested', ts: Date.now() });
+    reqItem.value=''; reqQty.value='1'; reqNote.value='';
+  });
+  clearReqBtn.addEventListener('click', ()=>{ reqItem.value=''; reqQty.value='1'; reqNote.value=''; });
+
+  function renderMaterials(obj){
+    reqCards.innerHTML = '';
+    const entries = Object.values(obj).sort((a,b)=> b.ts - a.ts);
+    if(!entries.length){ reqCards.innerHTML = '<div class="item small">No requests yet.</div>'; return; }
+    entries.forEach(r=>{
+      const div = document.createElement('div'); div.className='item';
+      let controls = '';
+      if(currentUser && currentUser.role==='admin'){
+        controls = `<div style="margin-top:8px" class="row">
+                      <div>
+                        <select class="select-inline" onchange="changeMaterialStatus('${r.id}', this.value)">
+                          <option ${r.status==='Requested'?'selected':''}>Requested</option>
+                          <option ${r.status==='Approved'?'selected':''}>Approved</option>
+                          <option ${r.status==='Out for Delivery'?'selected':''}>Out for Delivery</option>
+                        </select>
+                      </div>
+                      <div><button class="ghost" onclick="removeMaterial('${r.id}')">Remove</button></div>
+                    </div>`;
+      } else {
+        // Operators should only see their own requests (or you can show all but here we filter to their own)
+        if(currentUser && r.uid !== (currentUser.uid || null) && currentUser.role!=='admin'){ return; } // skip others
+        controls = `<div class="small">Status: <strong>${escape(r.status)}</strong></div>`;
+      }
+      div.innerHTML = `<div style="font-weight:700">${escape(r.item)}</div>
+                       <div class="small">Qty: ${escape(String(r.qty))} • Requested by: ${escape(r.by)} • ${new Date(r.ts).toLocaleString()}</div>
+                       <div style="margin-top:8px">${escape(r.note||'')}</div>
+                       ${controls}`;
+      reqCards.appendChild(div);
+    });
+  }
+
+  window.changeMaterialStatus = async (id, value) => {
+    await update(ref(db, 'materials/' + id), { status: value });
+  };
+  window.removeMaterial = async (id) => {
+    if(!confirm('Remove request?')) return;
+    await remove(ref(db, 'materials/' + id));
+  };
+
+  document.getElementById('approveAllBtn').addEventListener('click', async ()=>{
+    if(!confirm('Approve all Requested requests?')) return;
+    const snap = await (await ref(db, 'materials').get)?.once?.('value'); // not supported in modular; we'll iterate simpler:
+    // Iterate by reading once:
+    const materialsSnap = await new Promise((res, rej)=> {
+      onValue(ref(db,'materials'), s => { res(s); }, { onlyOnce:true }, e=>rej(e));
+    });
+    const obj = materialsSnap.val() || {};
+    for(const id in obj){
+      if(obj[id].status === 'Requested'){
+        await update(ref(db, 'materials/' + id), { status: 'Approved' });
+      }
+    }
+  });
+
+  document.getElementById('outForDeliveryAllBtn').addEventListener('click', async ()=>{
+    if(!confirm('Set all Approved to Out for Delivery?')) return;
+    const materialsSnap = await new Promise((res, rej)=> {
+      onValue(ref(db,'materials'), s => { res(s); }, { onlyOnce:true }, e=>rej(e));
+    });
+    const obj = materialsSnap.val() || {};
+    for(const id in obj){
+      if(obj[id].status === 'Approved'){
+        await update(ref(db, 'materials/' + id), { status: 'Out for Delivery' });
+      }
+    }
+  });
+
+  // ----------------------------
+  // 9) Documents
+  // ----------------------------
+  addDocBtn.addEventListener('click', async ()=>{
+    const nameVal = docName.value.trim();
+    const statusVal = docStatus.value;
+    if(!nameVal){ alert('Enter document name'); return; }
+    const newRef = push(ref(db, 'documents'));
+    await set(newRef, { id: newRef.key, name: nameVal, status: statusVal, author: currentUser.email, ts: Date.now() });
+    docName.value=''; renderDocuments();
+  });
+  clearDocBtn.addEventListener('click', ()=>{ docName.value=''; docStatus.selectedIndex=0; });
+
+  function renderDocuments(obj){
+    docCards.innerHTML = '';
+    const entries = Object.values(obj).sort((a,b)=> b.ts - a.ts);
+    if(!entries.length){ docCards.innerHTML = '<div class="item small">No documents tracked.</div>'; return; }
+    entries.forEach(d=>{
+      const div = document.createElement('div'); div.className='item';
+      div.innerHTML = `<div style="font-weight:700">${escape(d.name)}</div>
+                       <div class="small">Status: ${escape(d.status)} • ${new Date(d.ts).toLocaleString()}</div>
+                       ${currentUser && currentUser.role==='admin' ? `<div style="margin-top:8px"><button class="ghost" onclick="removeDocument('${d.id}')">Remove</button></div>` : ''}`;
+      docCards.appendChild(div);
+    });
+  }
+  window.removeDocument = async (id)=>{ if(!confirm('Remove document?')) return; await remove(ref(db,'documents/'+id)); };
+
+  // ----------------------------
+  // 10) Payslips
+  // ----------------------------
+  submitPayslipBtn.addEventListener('click', async ()=>{
+    const monthVal = psMonth.value;
+    const cutoffVal = psCutoff.value;
+    if(!monthVal || !cutoffVal){ alert('Select month and cut-off'); return; }
+    const newRef = push(ref(db, 'payslips'));
+    await set(newRef, { id: newRef.key, name: currentUser.name || currentUser.email, email: currentUser.email, month: monthVal, cutoff: cutoffVal, status: 'Pending', ts: Date.now() });
+    psMonth.selectedIndex = 0; psCutoff.selectedIndex = 0;
+  });
+  clearPayslipBtn.addEventListener('click', ()=>{ psMonth.selectedIndex=0; psCutoff.selectedIndex=0; });
+
+  function renderPayslips(obj){
+    payslipCards.innerHTML = '';
+    const entries = Object.values(obj).sort((a,b)=> b.ts - a.ts);
+    if(!entries.length){ payslipCards.innerHTML = '<div class="item small">No payslip requests.</div>'; return; }
+    entries.forEach(p=>{
+      const div = document.createElement('div'); div.className='item';
+      let controls = '';
+      if(currentUser && currentUser.role==='admin'){
+        controls = `<div style="margin-top:8px" class="row"><div><select class="select-inline" onchange="changePayslipStatus('${p.id}', this.value)"><option ${p.status==='Pending'?'selected':''}>Pending</option><option ${p.status==='Approved'?'selected':''}>Approved</option><option ${p.status==='Ready for Pickup'?'selected':''}>Ready for Pickup</option></select></div><div><button class="ghost" onclick="removePayslip('${p.id}')">Remove</button></div></div>`;
+      } else {
+        if(currentUser && p.email !== currentUser.email && currentUser.role!=='admin'){ return; } // only show own to operator
+        controls = `<div class="small">Status: <strong>${escape(p.status)}</strong></div>`;
+      }
+      div.innerHTML = `<div style="font-weight:700">${escape(p.name || p.email)}</div>
+                       <div class="small">${escape(p.email)} • ${escape(p.month)} • Cut-off: ${escape(p.cutoff)} • ${new Date(p.ts).toLocaleString()}</div>
+                       ${controls}`;
+      payslipCards.appendChild(div);
+    });
+  }
+  window.changePayslipStatus = async (id, value)=>{ await update(ref(db, 'payslips/' + id), { status: value }); };
+  window.removePayslip = async (id)=>{ if(!confirm('Remove payslip request?')) return; await remove(ref(db, 'payslips/' + id)); };
+
+  // ----------------------------
+  // 11) Operators list (admin only)
+  // ----------------------------
+  function renderOperators(obj){
+    operatorList.innerHTML = '';
+    const entries = Object.entries(obj || {}).filter(([k,v]) => v.role === 'operator');
+    if(entries.length === 0){ operatorList.innerHTML = '<div class="item small">No registered operators.</div>'; return; }
+    entries.sort((a,b)=> (b[1].createdAt||0) - (a[1].createdAt||0));
+    entries.forEach(([uid,u])=>{
+      const div = document.createElement('div'); div.className='item';
+      div.innerHTML = `<div style="font-weight:700">${escape(u.name)}</div><div class="small">${escape(u.email)}</div><div style="margin-top:8px"><button class="ghost" onclick="removeOperator('${uid}')">Remove</button></div>`;
+      operatorList.appendChild(div);
+    });
+  }
+  window.removeOperator = async (uid) => {
+    if(!confirm('Remove operator account? This will delete user entry in DB.')) return;
+    await remove(ref(db, 'users/' + uid));
+    // Optionally, you could also delete Firebase Auth user via Admin SDK — not possible from client JS.
+  };
+
+  // ----------------------------
+  // 12) Dashboard counts
+  // ----------------------------
+  function renderDashboardCounts(){
+    // read snapshots once
+    Promise.all([
+      new Promise(res => onValue(ref(db,'announcements'), s=>res(s.val()||{}), {onlyOnce:true})),
+      new Promise(res => onValue(ref(db,'materials'), s=>res(s.val()||{}), {onlyOnce:true})),
+      new Promise(res => onValue(ref(db,'documents'), s=>res(s.val()||{}), {onlyOnce:true})),
+      new Promise(res => onValue(ref(db,'payslips'), s=>res(s.val()||{}), {onlyOnce:true})),
+      new Promise(res => onValue(ref(db,'users'), s=>res(s.val()||{}), {onlyOnce:true}))
+    ]).then(([ann,mat,doc,pay,users])=>{
+      kpiAnnouncements.textContent = Object.keys(ann).length || 0;
+      kpiRequests.textContent = Object.keys(mat).length || 0;
+      kpiDocs.textContent = Object.keys(doc).length || 0;
+      kpiPayslips.textContent = Object.keys(pay).length || 0;
+      kpiOperators.textContent = Object.values(users).filter(u=>u.role==='operator').length || 0;
+
+      // breakdown
+      const byStatus = Object.values(mat || {}).reduce((acc,r)=>{ acc[r.status]=(acc[r.status]||0)+1; return acc; }, {});
+      dashboardDetails.innerHTML = `<div class="card"><div><strong>Requests by status</strong></div><div class="small">Requested: ${byStatus['Requested']||0} • Approved: ${byStatus['Approved']||0} • Out for Delivery: ${byStatus['Out for Delivery']||0}</div></div>`;
+    });
+  }
+
+  // ----------------------------
+  // 13) Views & nav helpers
+  // ----------------------------
+  function setActiveNav(btn){ document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
+  navDashboard.addEventListener('click', ()=>{ setActiveNav(navDashboard); showDashboard(); });
+  navAnnouncements.addEventListener('click', ()=>{ setActiveNav(navAnnouncements); showAnnouncements(); });
+  navRequests.addEventListener('click', ()=>{ setActiveNav(navRequests); showRequests(); });
+  navDocs.addEventListener('click', ()=>{ setActiveNav(navDocs); showDocs(); });
+  navPayslips.addEventListener('click', ()=>{ setActiveNav(navPayslips); showPayslips(); });
+  navOperators.addEventListener('click', ()=>{ setActiveNav(navOperators); showOperators(); });
+
+  function hideAllSections(){ document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden')); }
+  function showDashboard(){ hideAllSections(); document.getElementById('secDashboard').classList.remove('hidden'); renderDashboardCounts(); }
+  function showAnnouncements(){ hideAllSections(); document.getElementById('secAnnouncements').classList.remove('hidden'); }
+  function showRequests(){ hideAllSections(); document.getElementById('secRequests').classList.remove('hidden'); }
+  function showDocs(){ hideAllSections(); document.getElementById('secDocs').classList.remove('hidden'); }
+  function showPayslips(){ hideAllSections(); document.getElementById('secPayslips').classList.remove('hidden'); }
+  function showOperators(){ hideAllSections(); document.getElementById('secOperators').classList.remove('hidden'); }
+
+  // sidebar toggle
+  toggleBtn.addEventListener('click', ()=> sidebar.classList.toggle('open'));
+
+  // ----------------------------
+  // 14) utility
+  // ----------------------------
+  function escape(s){ if(!s) return ''; return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+  // ----------------------------
+  // 15) Restore operator session if already signed in (Firebase)
+  // ----------------------------
+  // When the page loads, check Firebase auth state to restore operator session:
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+  onAuthStateChanged(auth, user => {
+    if(user){
+      // fetch user profile from DB
+      onValue(ref(db, 'users/' + user.uid), snapshot => {
+        const v = snapshot.val();
+        currentUser = { uid: user.uid, email: user.email, name: v?.name || user.email, role: v?.role || 'operator' };
+        openWorkspace();
+      }, { onlyOnce: true });
+    } else {
+      // no operator signed in
+      // nothing: still allow admin login via fixed credentials
+    }
+  });
+
+  // ----------------------------
+  // 16) Expose some debug helpers to window
+  // ----------------------------
+  window._stp = {
+    db, auth, currentUser,
+    // helpers (for console)
+    renderAnnouncements, renderMaterials, renderDocuments, renderPayslips, renderOperators
+  };
+</script>
+</body>
+</html>
