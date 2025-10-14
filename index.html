@@ -3,27 +3,31 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>STP Operators Workspace — Final</title>
+<title>MIRAGA STP OPERATORS WORKSPACE</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
 <style>
 :root{
   --bg:#f4f6f7; --card:#ffffff; --muted:#eef1f2; --soft:#6b7280;
-  --green:#2f855a; --brown:#6b4c3b; --radius:12px; --shadow:0 10px 28px rgba(20,20,20,0.06);
+  --green:#2f855a; --brown:#6b4c3b; --accent:#2f855a;
+  --radius:12px; --shadow: 0 10px 28px rgba(20,20,20,0.06);
+  --maxw:1150px;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
-  margin:0;font-family:"Montserrat",system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+  margin:0;
+  font-family:"Montserrat",Roboto,system-ui,-apple-system,"Segoe UI",Arial;
   background:var(--bg);color:var(--brown);display:flex;justify-content:center;padding:28px;
 }
-.container{width:100%;max-width:1100px}
+.container{width:100%;max-width:var(--maxw)}
 .header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
 .brand{display:flex;gap:12px;align-items:center}
-.logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--brown));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
-h1{font-size:1.05rem;margin:0}
-.tag{color:var(--soft);font-size:0.9rem}
+.logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--green),#7a5a43);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+h1{font-family:"Montserrat",sans-serif;margin:0;font-size:1.05rem}
+.meta{color:var(--soft);font-size:0.9rem}
 
 /* Auth */
 .auth-card{background:var(--card);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
@@ -34,19 +38,18 @@ h1{font-size:1.05rem;margin:0}
 .panel{padding:20px;animation:fade .35s}
 .hidden{display:none}
 label{display:block;margin-top:10px;font-size:0.95rem}
-input,textarea,select,button{width:100%;padding:10px;margin-top:8px;border-radius:10px;border:1px solid #ddd}
+input,textarea,select,button{width:100%;padding:10px;margin-top:8px;border-radius:10px;border:1px solid #ddd;font-family:inherit}
 textarea{min-height:90px;resize:vertical}
 button.primary{background:var(--green);color:#fff;border:0;font-weight:700;padding:10px;border-radius:10px;cursor:pointer}
 button.ghost{background:transparent;border:1px solid #d5d7d8;padding:9px;border-radius:10px;cursor:pointer}
 .note{color:var(--soft);font-size:0.95rem;margin-top:8px}
 .success{color:var(--green);font-weight:700;margin-top:8px}
 .small{font-size:0.9rem;color:var(--soft)}
-
 @keyframes fade{from{opacity:0}to{opacity:1}}
 
 /* App layout */
 .app{display:none;margin-top:18px}
-.layout{display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:start}
+.layout{display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start}
 @media(max-width:900px){ .layout{grid-template-columns:1fr} }
 
 /* Sidebar */
@@ -62,10 +65,11 @@ button.ghost{background:transparent;border:1px solid #d5d7d8;padding:9px;border-
 .main{background:var(--card);border-radius:12px;padding:18px;box-shadow:var(--shadow)}
 .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
 .toggle{background:var(--green);color:white;border:0;padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:700}
-.section{margin-top:12px}.card{background:var(--muted);padding:12px;border-radius:10px;border:1px solid #eee;margin-bottom:12px}
+.section{margin-top:12px}
+.card{background:var(--muted);padding:12px;border-radius:10px;border:1px solid #eee;margin-bottom:12px}
 .item{background:var(--card);padding:12px;border-radius:10px;border:1px solid #eee;margin-bottom:10px}
-.kpi-row{display:flex;gap:12px;margin-top:12px}
-.kpi{flex:1;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfbfb);box-shadow:0 4px 10px rgba(0,0,0,0.04);border:1px solid #eee}
+.kpi-row{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap}
+.kpi{flex:1;min-width:150px;padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff,#fbfbfb);box-shadow:0 4px 10px rgba(0,0,0,0.04);border:1px solid #eee}
 .kpi strong{display:block;font-size:1.2rem}
 .footer{margin-top:18px;color:var(--soft);text-align:center;font-size:0.9rem}
 .row{display:flex;gap:10px;align-items:center}
@@ -73,20 +77,20 @@ button.ghost{background:transparent;border:1px solid #d5d7d8;padding:9px;border-
 .table{width:100%;border-collapse:collapse}
 .table th,.table td{padding:8px;border:1px solid #e6e6e6;text-align:left}
 .actions button{margin-right:6px}
-@media(max-width:720px){ .topbar{flex-direction:column;align-items:flex-start} }
+@media(max-width:720px){ .header{flex-direction:column;align-items:flex-start} .topbar{flex-direction:column;align-items:flex-start;gap:8px} }
 </style>
 </head>
 <body>
-  <div class="container" role="application">
+  <div class="container" role="application" aria-label="MIRAGA STP Operators Workspace">
     <div class="header">
-      <div class="brand" aria-hidden="true">
+      <div class="brand">
         <div class="logo">STP</div>
         <div>
-          <h1>STP Operators Workspace</h1>
-          <div class="tag">Announcements · Material Requests · Documents · Payslips</div>
+          <h1>MIRAGA STP OPERATORS WORKSPACE</h1>
+          <div class="meta">Official workspace of operators for announcements, requests, and documents</div>
         </div>
       </div>
-      <div id="userBadge" aria-live="polite"></div>
+      <div id="userBadge" aria-live="polite" class="small"></div>
     </div>
 
     <!-- AUTH -->
@@ -98,7 +102,7 @@ button.ghost{background:transparent;border:1px solid #d5d7d8;padding:9px;border-
 
       <div id="panelLogin" class="panel" aria-hidden="false">
         <h2 id="authTitle" style="margin:0 0 6px 0">Sign in</h2>
-        <div class="note">Admin is preconfigured. Operators register using the Register tab.</div>
+        <div class="note">Log in your account. No account? sign up below.</div>
 
         <form id="loginForm">
           <label for="loginEmail">Email</label>
@@ -122,6 +126,9 @@ button.ghost{background:transparent;border:1px solid #d5d7d8;padding:9px;border-
         <form id="registerForm">
           <label for="regName">Full name</label>
           <input id="regName" type="text" required>
+
+          <label for="regId">ID No.</label>
+          <input id="regId" type="text" placeholder="Employee / ID number" required>
 
           <label for="regEmail">Email</label>
           <input id="regEmail" type="email" autocomplete="email" required>
@@ -154,40 +161,36 @@ button.ghost{background:transparent;border:1px solid #d5d7d8;padding:9px;border-
             <button id="navRequests">Material Requests</button>
             <button id="navDocs">Document Status</button>
             <button id="navPayslips">Payslip Requests</button>
-            <button id="navOperators" style="display:none">Operators</button>
+            <button id="navOperators" style="display:none">Registered Operators</button>
             <button id="navLogout">Logout</button>
           </nav>
 
-          <div style="position:absolute;bottom:12px;left:12px;font-size:0.9rem;color:rgba(255,255,255,0.85)">&copy; STP</div>
         </aside>
 
         <!-- Main -->
         <main class="main" id="main">
           <div class="topbar">
             <div id="welcome"></div>
-            <div>
-              <button class="toggle" id="toggleBtn">☰ Menu</button>
-            </div>
+            <div><button class="toggle" id="toggleBtn">☰ Menu</button></div>
           </div>
 
-          <!-- Dashboard (admin only) -->
-          <section id="secDashboard" class="section hidden">
-            <h3>Dashboard</h3>
+          <!-- Dashboard -->
+          <section id="secDashboard" class="section hidden" aria-live="polite">
+            <h3>Dashboard (Admin)</h3>
             <div class="kpi-row">
               <div class="kpi"><strong id="kpiAnnouncements">0</strong>Announcements</div>
-              <div class="kpi"><strong id="kpiRequests">0</strong>Total Requests</div>
-              <div class="kpi"><strong id="kpiDocs">0</strong>Documents</div>
+              <div class="kpi"><strong id="kpiMaterials">0</strong>Material Requests</div>
               <div class="kpi"><strong id="kpiPayslips">0</strong>Payslip Requests</div>
+              <div class="kpi"><strong id="kpiDocuments">0</strong>Documents</div>
               <div class="kpi"><strong id="kpiOperators">0</strong>Operators</div>
             </div>
-            <div style="margin-top:12px" id="dashboardDetails"></div>
+            <div id="dashboardDetails" style="margin-top:12px"></div>
           </section>
 
           <!-- Announcements -->
           <section id="secAnnouncements" class="section hidden">
             <h3>Announcements</h3>
             <div id="annCards"></div>
-
             <div id="adminAnnForm" class="card hidden">
               <label for="annTitle">Title</label>
               <input id="annTitle" type="text" placeholder="Title">
@@ -231,17 +234,11 @@ button.ghost{background:transparent;border:1px solid #d5d7d8;padding:9px;border-
           <section id="secDocs" class="section hidden">
             <h3>Document Status</h3>
             <div id="docCards"></div>
-
             <div id="adminDocForm" class="card hidden">
               <label for="docName">Document name</label>
               <input id="docName" type="text" placeholder="Permit / Report">
               <label for="docStatus">Status</label>
-              <select id="docStatus">
-                <option>Pending</option>
-                <option>Submitted</option>
-                <option>Reviewed</option>
-                <option>Approved</option>
-              </select>
+              <select id="docStatus"><option>Pending</option><option>Submitted</option><option>Reviewed</option><option>Approved</option></select>
               <div style="display:flex;gap:10px;margin-top:8px">
                 <button class="primary" id="addDoc">Add / Update</button>
                 <button class="ghost" id="clearDoc">Clear</button>
@@ -253,7 +250,6 @@ button.ghost{background:transparent;border:1px solid #d5d7d8;padding:9px;border-
           <section id="secPayslips" class="section hidden">
             <h3>Payslip Requests</h3>
             <div id="payslipCards"></div>
-
             <div id="operatorPayslipForm" class="card hidden">
               <label for="psMonth">Month</label>
               <select id="psMonth">
@@ -262,14 +258,8 @@ button.ghost{background:transparent;border:1px solid #d5d7d8;padding:9px;border-
                 <option>May</option><option>June</option><option>July</option><option>August</option>
                 <option>September</option><option>October</option><option>November</option><option>December</option>
               </select>
-
               <label for="psCutoff">Cut-off</label>
-              <select id="psCutoff">
-                <option value="">Select cut-off</option>
-                <option>1st</option>
-                <option>2nd</option>
-              </select>
-
+              <select id="psCutoff"><option value="">Select cut-off</option><option>1st</option><option>2nd</option></select>
               <div style="display:flex;gap:10px;margin-top:8px">
                 <button class="primary" id="submitPayslip">Request Payslip</button>
                 <button class="ghost" id="clearPayslip">Clear</button>
@@ -277,28 +267,35 @@ button.ghost{background:transparent;border:1px solid #d5d7d8;padding:9px;border-
             </div>
           </section>
 
+          <!-- Operators -->
+          <section id="secOperators" class="section hidden" aria-live="polite">
+            <h3>Registered Operators</h3>
+            <div class="card">
+              <table class="table" id="operatorsTable" aria-label="Registered operators table">
+                <thead><tr><th>Full name</th><th>Email</th><th>ID No.</th><th>Registered</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </section>
+
         </main>
       </div>
 
-      <div class="footer">Data stored in Firebase Realtime Database. Secure rules recommended for production.</div>
+      <div class="footer">MIRAGA BUILDERS AND TRADING INC. — All rights reserved 2025</div>
     </div>
-
-    <div class="footer" style="margin-top:18px">Design: Modern Minimal — white / grey / green / brown · Fonts: Montserrat, Acumin Pro</div>
   </div>
 
-<!-- Firebase compat libraries -->
+<!-- Firebase compat libs -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
 <script>
-/* ==============
-   Firebase config - already set with your keys.
-   IMPORTANT: If your Realtime DB URL differs, replace databaseURL below.
-   Example DB URL: https://workspace-1cf42-default-rtdb.firebaseio.com
-   ============== */
+/* -----------------------
+   Firebase config
+   ----------------------- */
 const firebaseConfig = {
-  apiKey: "AIzaSyBM6K8zz8WNYtU7NHRMKp-qrVCWoxU8hGw",
+    apiKey: "AIzaSyBM6K8zz8WNYtU7NHRMKp-qrVCWoxU8hGw",
   authDomain: "workspace-1cf42.firebaseapp.com",
   databaseURL: "https://workspace-1cf42-default-rtdb.firebaseio.com",
   projectId: "workspace-1cf42",
@@ -307,12 +304,11 @@ const firebaseConfig = {
   appId: "1:113015937389:web:a75cfaf9f767fd4e90e264",
   measurementId: "G-NHGX7PKSSV"
 };
-
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 
-/* Fixed admin credentials (exclusive) */
+/* Fixed admin credentials (auto-provisioned if missing) */
 const ADMIN_EMAIL = 'jmonterona.miraga@gmail.com';
 const ADMIN_PW = 'jmonterona060801';
 
@@ -325,7 +321,6 @@ const gotoRegister = document.getElementById('gotoRegister');
 const backToLogin = document.getElementById('backToLogin');
 const authCard = document.getElementById('authCard');
 const appArea = document.getElementById('appArea');
-const sidebar = document.getElementById('sidebar');
 
 const loginForm = document.getElementById('loginForm');
 const registerForm = document.getElementById('registerForm');
@@ -344,12 +339,12 @@ const navOperators = document.getElementById('navOperators');
 const navLogout = document.getElementById('navLogout');
 const toggleBtn = document.getElementById('toggleBtn');
 
-/* Sections & forms */
 const secDashboard = document.getElementById('secDashboard');
 const secAnnouncements = document.getElementById('secAnnouncements');
 const secRequests = document.getElementById('secRequests');
 const secDocs = document.getElementById('secDocs');
 const secPayslips = document.getElementById('secPayslips');
+const secOperators = document.getElementById('secOperators');
 
 const adminAnnForm = document.getElementById('adminAnnForm');
 const annCards = document.getElementById('annCards');
@@ -384,200 +379,161 @@ const clearPayslipBtn = document.getElementById('clearPayslip');
 const psMonth = document.getElementById('psMonth');
 const psCutoff = document.getElementById('psCutoff');
 
-/* Dashboard KPIs */
+const operatorsTableBody = document.querySelector('#operatorsTable tbody');
+
 const kpiAnnouncements = document.getElementById('kpiAnnouncements');
-const kpiRequests = document.getElementById('kpiRequests');
-const kpiDocs = document.getElementById('kpiDocs');
+const kpiMaterials = document.getElementById('kpiMaterials');
 const kpiPayslips = document.getElementById('kpiPayslips');
+const kpiDocuments = document.getElementById('kpiDocuments');
 const kpiOperators = document.getElementById('kpiOperators');
 const dashboardDetails = document.getElementById('dashboardDetails');
 
 /* state */
-let currentUser = null; // { role: 'admin' } or { uid, email, name, role:'operator' }
+let currentUser = null;
+let listenersAttached = false;
 
-/* Ensure Firebase Auth persistence for operators */
-auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(e=>console.warn('persistence failed', e));
+/* ensure firebase auth persistence for all users */
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(e=>console.warn('persistence error', e));
 
-/* Tab switching */
+/* Tab handlers */
 tabLogin.addEventListener('click', ()=> switchTab('login'));
 tabRegister.addEventListener('click', ()=> switchTab('register'));
 gotoRegister.addEventListener('click', ()=> switchTab('register'));
 backToLogin.addEventListener('click', ()=> switchTab('login'));
 function switchTab(which){
-  if(which === 'login'){
-    panelLogin.classList.remove('hidden'); panelRegister.classList.add('hidden');
-    tabLogin.classList.remove('dim'); tabRegister.classList.add('dim');
-  } else {
-    panelLogin.classList.add('hidden'); panelRegister.classList.remove('hidden');
-    tabLogin.classList.add('dim'); tabRegister.classList.remove('dim');
-  }
+  if(which === 'login'){ panelLogin.classList.remove('hidden'); panelRegister.classList.add('hidden'); tabLogin.classList.remove('dim'); tabRegister.classList.add('dim'); }
+  else { panelLogin.classList.add('hidden'); panelRegister.classList.remove('hidden'); tabLogin.classList.add('dim'); tabRegister.classList.remove('dim'); }
   loginMsg.textContent=''; regMsg.textContent='';
 }
 
-/* --- Admin session persistence (localStorage) ---
-   We store a flag so admin remains signed-in across refresh.
-*/
-const ADMIN_SESSION_KEY = 'stp_admin_session';
-function setAdminSession(on){
-  if(on) localStorage.setItem(ADMIN_SESSION_KEY, '1');
-  else localStorage.removeItem(ADMIN_SESSION_KEY);
-}
-function isAdminSession(){
-  return localStorage.getItem(ADMIN_SESSION_KEY) === '1';
-}
-
-/* Login (admin local or operator via Firebase Auth) */
+/* LOGIN: handle admin auto-provision + operator signin */
 loginForm.addEventListener('submit', async (e)=>{
   e.preventDefault();
   loginMsg.textContent = '';
   const email = document.getElementById('loginEmail').value.trim().toLowerCase();
   const pw = document.getElementById('loginPw').value;
 
+  // If this is the fixed admin email, try sign-in; if missing, auto-create it
   if(email === ADMIN_EMAIL){
-    if(pw === ADMIN_PW){
-      currentUser = { role: 'admin', email: ADMIN_EMAIL, name: 'Admin' };
-      setAdminSession(true);
+    try{
+      await auth.signInWithEmailAndPassword(email, pw);
+      // signed in
+    }catch(err){
+      if(err.code === 'auth/user-not-found'){
+        try{
+          // create the admin account in Firebase Auth
+          const cred = await auth.createUserWithEmailAndPassword(email, pw);
+          const uid = cred.user.uid;
+          // create profile record
+          await db.ref('users/' + uid).set({ name: 'Admin', email, role: 'admin', createdAt: Date.now() });
+        }catch(err2){
+          console.error('admin auto-create failed', err2);
+          loginMsg.textContent = err2.message || 'Admin creation failed';
+          return;
+        }
+      } else {
+        console.error('admin sign-in error', err);
+        loginMsg.textContent = err.message || 'Sign-in failed';
+        return;
+      }
+      // after auto-creation, sign in
+      try{ await auth.signInWithEmailAndPassword(email, pw); }catch(e3){ console.error('sign-in after create failed', e3); loginMsg.textContent = e3.message || 'Admin sign-in failed'; return; }
+    }
+
+    // At this point admin is signed in via Firebase
+    const user = auth.currentUser;
+    if(user){
+      const snap = await db.ref('users/' + user.uid).once('value');
+      const profile = snap.val() || {};
+      currentUser = { uid: user.uid, role: 'admin', email: user.email, name: profile.name || 'Admin' };
       openWorkspace();
       loginMsg.textContent = 'Signed in as admin';
     } else {
-      loginMsg.textContent = 'Incorrect admin password';
+      loginMsg.textContent = 'Admin sign-in failed';
     }
     return;
   }
 
+  // Regular operator login
   try{
     const cred = await auth.signInWithEmailAndPassword(email, pw);
     const uid = cred.user.uid;
-    const snapshot = await db.ref('users/' + uid).once('value');
-    const profile = snapshot.val();
-    currentUser = { uid, email: profile?.email || email, name: profile?.name || email, role: profile?.role || 'operator' };
+    const snap = await db.ref('users/' + uid).once('value');
+    const profile = snap.val() || {};
+    currentUser = { uid, email: profile.email || email, name: profile.name || email, idNo: profile.idNo || '', role: profile.role || 'operator' };
     openWorkspace();
     loginMsg.textContent = 'Signed in';
-  } catch(err){
+  }catch(err){
     console.error(err); loginMsg.textContent = err.message || 'Sign-in failed';
   }
 });
 
-/* Register (operators) - remain on page with success message */
+/* REGISTER (operators) */
 registerForm.addEventListener('submit', async (e)=>{
   e.preventDefault();
   regMsg.textContent = '';
   const name = document.getElementById('regName').value.trim();
+  const idNo = document.getElementById('regId').value.trim();
   const email = document.getElementById('regEmail').value.trim().toLowerCase();
   const pw = document.getElementById('regPw').value;
-  if(!name || !email || !pw){ regMsg.textContent = 'Enter full name, email & password'; return; }
-  if(email === ADMIN_EMAIL){ regMsg.textContent = 'Admin account is reserved and cannot be registered.'; return; }
+  if(!name || !email || !pw || !idNo){ regMsg.textContent = 'Enter full name, ID no., email & password'; return; }
+  if(email === ADMIN_EMAIL){ regMsg.textContent = 'Admin account cannot be registered'; return; }
   try{
-    const cred = await auth.createUserWithEmailAndPassword(email, pw);
+    const cred = await auth.createUserWithEmailAndPassword(email,pw);
     const uid = cred.user.uid;
-    await db.ref('users/' + uid).set({ name, email, role: 'operator', createdAt: Date.now() });
-    regMsg.textContent = 'Operator account created successfully. Please sign in using the Login tab.';
+    await db.ref('users/' + uid).set({ name, email, idNo, role:'operator', createdAt: Date.now() });
+    regMsg.textContent = 'Operator created — please sign in via Login tab.';
     registerForm.reset();
-  } catch(err){
+  }catch(err){
     console.error(err); regMsg.textContent = err.message || 'Registration failed';
   }
 });
 
-/* Open workspace for currentUser and configure UI by role */
+/* Open workspace UI and attach listeners */
 function openWorkspace(){
   authCard.style.display = 'none';
   appArea.style.display = 'block';
   appArea.setAttribute('aria-hidden','false');
   updateUserBadge();
   configureForRole(currentUser.role);
-  sidebar.classList.add('collapsed');
-
-  // Attach realtime listeners (ensure they are active after login)
   attachRealtimeListeners();
-
-  // Default view
-  if(currentUser.role === 'admin'){ setActiveNav(navDashboard); showDashboard(); }
-  else { setActiveNav(navAnnouncements); showAnnouncements(); }
+  if(currentUser.role === 'admin'){ setActiveNav(navDashboard); showDashboard(); } else { setActiveNav(navAnnouncements); showAnnouncements(); }
 }
 
-/* Update top badge */
-function updateUserBadge(){
-  userBadge.innerHTML = currentUser ? `<div class="badge">${escape(currentUser.name || currentUser.email)} (${escape(currentUser.role)})</div>` : '';
-  welcomeEl.innerHTML = currentUser ? `<div style="font-weight:700">Welcome — ${escape(currentUser.name || currentUser.email)}</div>` : '';
-}
-
-/* Configure UI by role */
+/* UI helpers */
+function updateUserBadge(){ userBadge.innerHTML = currentUser ? `<div style="font-weight:700">${escape(currentUser.name || currentUser.email)} (${escape(currentUser.role)})</div>` : ''; welcomeEl.innerHTML = currentUser ? `<div style="font-weight:700">Welcome — ${escape(currentUser.name || currentUser.email)}</div>` : ''; }
 function configureForRole(role){
   const isAdmin = role === 'admin';
   navDashboard.style.display = isAdmin ? 'block' : 'none';
   navOperators.style.display = isAdmin ? 'block' : 'none';
-
   adminAnnForm.classList.toggle('hidden', !isAdmin);
   adminReqControls.classList.toggle('hidden', !isAdmin);
   adminDocForm.classList.toggle('hidden', !isAdmin);
-
   operatorReqForm.classList.toggle('hidden', isAdmin);
   operatorPayslipForm.classList.toggle('hidden', isAdmin);
 }
 
-/* Sidebar nav wiring */
-toggleBtn.addEventListener('click', ()=> sidebar.classList.toggle('open'));
+/* nav wiring */
+document.getElementById('toggleBtn').addEventListener('click', ()=> document.getElementById('sidebar').classList.toggle('open'));
 navDashboard.addEventListener('click', ()=>{ setActiveNav(navDashboard); showDashboard(); });
 navAnnouncements.addEventListener('click', ()=>{ setActiveNav(navAnnouncements); showAnnouncements(); });
 navRequests.addEventListener('click', ()=>{ setActiveNav(navRequests); showRequests(); });
 navDocs.addEventListener('click', ()=>{ setActiveNav(navDocs); showDocs(); });
 navPayslips.addEventListener('click', ()=>{ setActiveNav(navPayslips); showPayslips(); });
 navOperators.addEventListener('click', ()=>{ setActiveNav(navOperators); showOperators(); });
-navLogout.addEventListener('click', logout);
+navLogout.addEventListener('click', async ()=>{ try{ await auth.signOut(); }catch(e){} currentUser=null; appArea.style.display='none'; authCard.style.display='block'; switchTab('login'); });
 
-function setActiveNav(btn){
-  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-}
+function setActiveNav(btn){ document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
 
-/* Logout */
-async function logout(){
-  try{ await auth.signOut(); }catch(e){/*ignore*/ }
-  setAdminSession(false);
-  currentUser = null;
-  appArea.style.display = 'none';
-  authCard.style.display = 'block';
-  switchTab('login');
-}
-
-/* Helpers */
-function escape(s){ if(!s) return ''; return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
-
-/* Realtime listeners & CRUD */
-let listenersAttached = false;
+/* attach realtime listeners once after auth restored */
 function attachRealtimeListeners(){
   if(listenersAttached) return;
   listenersAttached = true;
-
-  db.ref('announcements').on('value', snapshot => {
-    const val = snapshot.val() || {};
-    renderAnnouncements(val);
-    renderDashboardCounts();
-  });
-
-  db.ref('materials').on('value', snapshot => {
-    const val = snapshot.val() || {};
-    renderMaterials(val);
-    renderDashboardCounts();
-  });
-
-  db.ref('documents').on('value', snapshot => {
-    const val = snapshot.val() || {};
-    renderDocuments(val);
-    renderDashboardCounts();
-  });
-
-  db.ref('payslips').on('value', snapshot => {
-    const val = snapshot.val() || {};
-    renderPayslips(val);
-    renderDashboardCounts();
-  });
-
-  db.ref('users').on('value', snapshot => {
-    const val = snapshot.val() || {};
-    renderOperators(val);
-    renderDashboardCounts();
-  });
+  db.ref('announcements').on('value', snap=>{ const data=snap.val()||{}; renderAnnouncements(data); renderDashboardCounts(); });
+  db.ref('materialRequests').on('value', snap=>{ const data=snap.val()||{}; renderMaterialRequests(data); renderDashboardCounts(); });
+  db.ref('payslipRequests').on('value', snap=>{ const data=snap.val()||{}; renderPayslipRequests(data); renderDashboardCounts(); });
+  db.ref('documentStatus').on('value', snap=>{ const data=snap.val()||{}; renderDocuments(data); renderDashboardCounts(); });
+  db.ref('users').on('value', snap=>{ const data=snap.val()||{}; renderOperators(data); renderDashboardCounts(); });
 }
 
 /* ===== Announcements ===== */
@@ -585,8 +541,8 @@ postAnnBtn.addEventListener('click', async ()=>{
   const title = annTitle.value.trim();
   const body = annBody.value.trim();
   if(!title && !body){ alert('Enter title or body'); return; }
-  const refNode = db.ref('announcements').push();
-  await refNode.set({ id: refNode.key, title, body, author: currentUser.email, ts: Date.now() });
+  const node = db.ref('announcements').push();
+  await node.set({ id: node.key, title, body, author: currentUser.email, ts: Date.now() });
   annTitle.value=''; annBody.value='';
 });
 clearAnnBtn.addEventListener('click', ()=>{ annTitle.value=''; annBody.value=''; });
@@ -604,42 +560,43 @@ function renderAnnouncements(obj){
     annCards.appendChild(el);
   });
 }
-window.removeAnnouncement = async (id) => { if(!confirm('Remove announcement?')) return; await db.ref('announcements/' + id).remove(); };
+window.removeAnnouncement = async (id)=>{ if(!confirm('Remove announcement?')) return; await db.ref('announcements/' + id).remove(); };
 
-/* ===== Materials ===== */
+/* ===== Material Requests ===== */
 submitReqBtn.addEventListener('click', async ()=>{
   const item = reqItem.value.trim();
   const qty = parseInt(reqQty.value) || 1;
   const note = reqNote.value.trim();
   if(!item){ alert('Enter item'); return; }
-  const refNode = db.ref('materials').push();
-  await refNode.set({ id: refNode.key, item, qty, note, by: currentUser.email, uid: currentUser.uid || null, status: 'Requested', ts: Date.now() });
+  const node = db.ref('materialRequests').push();
+  await node.set({ id: node.key, item, qty, note, by: currentUser.email, uid: currentUser.uid || null, status: 'Requested', ts: Date.now() });
   reqItem.value=''; reqQty.value='1'; reqNote.value='';
 });
 clearReqBtn.addEventListener('click', ()=>{ reqItem.value=''; reqQty.value='1'; reqNote.value=''; });
 
-function renderMaterials(obj){
+function renderMaterialRequests(obj){
   reqCards.innerHTML = '';
   const entries = Object.values(obj).sort((a,b)=> (b.ts||0)-(a.ts||0));
   if(!entries.length){ reqCards.innerHTML = '<div class="item small">No requests yet.</div>'; return; }
   entries.forEach(r=>{
+    // only show operator's own requests unless admin
     if(currentUser.role !== 'admin' && r.uid !== (currentUser.uid || null)) return;
     const el = document.createElement('div'); el.className='item';
     let controls = '';
     if(currentUser && currentUser.role === 'admin'){
       controls = `<div style="margin-top:8px" class="row">
                     <div>
-                      <select class="select-inline" onchange="changeReqStatus('${r.id}', this.value)">
+                      <select class="select-inline" onchange="changeMaterialStatus('${r.id}', this.value)">
                         <option ${r.status==='Requested'?'selected':''}>Requested</option>
                         <option ${r.status==='Approved'?'selected':''}>Approved</option>
-                        <option ${r.status==='Rejected'?'selected':''}>Rejected</option>
+                        <option ${r.status==='Preparation'?'selected':''}>Preparation</option>
                         <option ${r.status==='Out for Delivery'?'selected':''}>Out for Delivery</option>
                       </select>
                     </div>
-                    <div class="actions"><button class="ghost" onclick="removeRequest('${r.id}')">Remove</button></div>
+                    <div class="actions"><button class="ghost" onclick="removeMaterial('${r.id}')">Remove</button></div>
                   </div>`;
     } else {
-      const statusBadge = r.status === 'Requested' ? '🟡 Requested' : r.status === 'Approved' ? '🟢 Approved' : r.status === 'Out for Delivery' ? '🚚 Out for Delivery' : '⛔ Rejected';
+      const statusBadge = r.status === 'Requested' ? '🟡 Requested' : r.status === 'Approved' ? '🟢 Approved' : r.status === 'Preparation' ? '🟠 Preparation' : r.status === 'Out for Delivery' ? '🚚 Out for Delivery' : r.status;
       controls = `<div class="small">Status: <strong>${statusBadge}</strong></div>`;
     }
     el.innerHTML = `<div style="font-weight:700">${escape(r.item)}</div>
@@ -649,18 +606,18 @@ function renderMaterials(obj){
     reqCards.appendChild(el);
   });
 }
-window.changeReqStatus = async (id, value) => { await db.ref('materials/' + id).update({ status: value }); };
-window.removeRequest = async (id) => { if(!confirm('Remove request?')) return; await db.ref('materials/' + id).remove(); };
-approveAllBtn.addEventListener('click', async ()=>{ if(!confirm('Approve all Requested requests?')) return; const snapshot = await db.ref('materials').once('value'); const obj = snapshot.val() || {}; for(const id in obj){ if(obj[id].status === 'Requested') await db.ref('materials/' + id).update({ status: 'Approved' }); } });
-outForDeliveryAllBtn.addEventListener('click', async ()=>{ if(!confirm('Set all Approved to Out for Delivery?')) return; const snapshot = await db.ref('materials').once('value'); const obj = snapshot.val() || {}; for(const id in obj){ if(obj[id].status === 'Approved') await db.ref('materials/' + id).update({ status: 'Out for Delivery' }); } });
+window.changeMaterialStatus = async (id, value) => { await db.ref('materialRequests/' + id).update({ status: value, tsUpdated: Date.now() }); };
+window.removeMaterial = async (id) => { if(!confirm('Remove request?')) return; await db.ref('materialRequests/' + id).remove(); };
+approveAllBtn.addEventListener('click', async ()=>{ if(!confirm('Approve all Requested?')) return; const snap = await db.ref('materialRequests').once('value'); const obj = snap.val() || {}; for(const id in obj){ if(obj[id].status === 'Requested') await db.ref('materialRequests/' + id).update({ status:'Approved', tsUpdated: Date.now() }); } });
+outForDeliveryAllBtn.addEventListener('click', async ()=>{ if(!confirm('Set all Approved to Out for Delivery?')) return; const snap = await db.ref('materialRequests').once('value'); const obj = snap.val() || {}; for(const id in obj){ if(obj[id].status === 'Approved') await db.ref('materialRequests/' + id).update({ status:'Out for Delivery', tsUpdated: Date.now() }); } });
 
 /* ===== Documents ===== */
 addDocBtn.addEventListener('click', async ()=>{
   const name = docName.value.trim();
   const status = docStatus.value;
   if(!name){ alert('Enter document name'); return; }
-  const refNode = db.ref('documents').push();
-  await refNode.set({ id: refNode.key, name, status, author: currentUser.email, ts: Date.now() });
+  const node = db.ref('documentStatus').push();
+  await node.set({ id: node.key, name, status, author: currentUser.email, ts: Date.now() });
   docName.value=''; docStatus.selectedIndex=0;
 });
 clearDocBtn.addEventListener('click', ()=>{ docName.value=''; docStatus.selectedIndex=0; });
@@ -677,33 +634,34 @@ function renderDocuments(obj){
     docCards.appendChild(el);
   });
 }
-window.removeDocument = async (id)=>{ if(!confirm('Remove document?')) return; await db.ref('documents/' + id).remove(); };
+window.removeDocument = async (id)=>{ if(!confirm('Remove document?')) return; await db.ref('documentStatus/' + id).remove(); };
 
-/* ===== Payslips ===== */
+/* ===== Payslip Requests ===== */
 submitPayslipBtn.addEventListener('click', async ()=>{
   const month = psMonth.value;
   const cutoff = psCutoff.value;
   if(!month || !cutoff){ alert('Select month and cut-off'); return; }
-  const refNode = db.ref('payslips').push();
-  await refNode.set({ id: refNode.key, name: currentUser.name || currentUser.email, email: currentUser.email, month, cutoff, status: 'Pending', ts: Date.now() });
+  const node = db.ref('payslipRequests').push();
+  await node.set({ id: node.key, name: currentUser.name || currentUser.email, email: currentUser.email, month, cutoff, status: 'Requested', ts: Date.now(), uid: currentUser.uid || null });
   psMonth.selectedIndex = 0; psCutoff.selectedIndex = 0;
 });
 clearPayslipBtn.addEventListener('click', ()=>{ psMonth.selectedIndex=0; psCutoff.selectedIndex=0; });
 
-function renderPayslips(obj){
+function renderPayslipRequests(obj){
   payslipCards.innerHTML = '';
   const entries = Object.values(obj).sort((a,b)=> (b.ts||0)-(a.ts||0));
   if(!entries.length){ payslipCards.innerHTML = '<div class="item small">No payslip requests.</div>'; return; }
   entries.forEach(p=>{
-    if(currentUser.role !== 'admin' && p.email !== currentUser.email) return;
+    if(currentUser.role !== 'admin' && p.uid !== (currentUser.uid || null)) return;
     const el = document.createElement('div'); el.className='item';
     let controls = '';
     if(currentUser && currentUser.role==='admin'){
       controls = `<div style="margin-top:8px" class="row">
                     <div><select class="select-inline" onchange="changePayslipStatus('${p.id}', this.value)">
-                      <option ${p.status==='Pending'?'selected':''}>Pending</option>
+                      <option ${p.status==='Requested'?'selected':''}>Requested</option>
                       <option ${p.status==='Approved'?'selected':''}>Approved</option>
-                      <option ${p.status==='Ready for Pickup'?'selected':''}>Ready for Pickup</option>
+                      <option ${p.status==='Preparation'?'selected':''}>Preparation</option>
+                      <option ${p.status==='For Printing'?'selected':''}>For Printing</option>
                     </select></div>
                     <div class="actions"><button class="ghost" onclick="removePayslip('${p.id}')">Remove</button></div>
                   </div>`;
@@ -716,69 +674,76 @@ function renderPayslips(obj){
     payslipCards.appendChild(el);
   });
 }
-window.changePayslipStatus = async (id, value)=>{ await db.ref('payslips/' + id).update({ status: value }); }
-window.removePayslip = async (id)=>{ if(!confirm('Remove payslip request?')) return; await db.ref('payslips/' + id).remove(); }
+window.changePayslipStatus = async (id, value)=>{ await db.ref('payslipRequests/' + id).update({ status: value, tsUpdated: Date.now() }); }
+window.removePayslip = async (id)=>{ if(!confirm('Remove payslip request?')) return; await db.ref('payslipRequests/' + id).remove(); }
 
-/* ===== Operators list (admin) ===== */
+/* ===== Operators table ===== */
 function renderOperators(obj){
-  // navOperators is shown only to admin; full operator table can be implemented if needed
+  operatorsTableBody.innerHTML = '';
+  const users = obj || {};
+  const rows = Object.values(users).filter(u => u.role === 'operator').sort((a,b)=> (b.createdAt||0)-(a.createdAt||0));
+  rows.forEach(u=>{
+    const tr = document.createElement('tr');
+    const created = u.createdAt ? new Date(u.createdAt).toLocaleString() : '';
+    tr.innerHTML = `<td>${escape(u.name||'')}</td><td>${escape(u.email||'')}</td><td>${escape(u.idNo||'')}</td><td>${escape(created)}</td>`;
+    operatorsTableBody.appendChild(tr);
+  });
 }
 
 /* ===== Dashboard counts ===== */
 function renderDashboardCounts(){
   Promise.all([
     db.ref('announcements').once('value'),
-    db.ref('materials').once('value'),
-    db.ref('documents').once('value'),
-    db.ref('payslips').once('value'),
+    db.ref('materialRequests').once('value'),
+    db.ref('payslipRequests').once('value'),
+    db.ref('documentStatus').once('value'),
     db.ref('users').once('value')
-  ]).then(([a,m,d,p,u])=>{
-    const ann = a.val() || {}; const mat = m.val() || {}; const doc = d.val() || {}; const pays = p.val() || {}; const users = u.val() || {};
+  ]).then(([a,m,p,d,u])=>{
+    const ann = a.val() || {}; const mat = m.val() || {}; const pays = p.val() || {}; const docs = d.val() || {}; const users = u.val() || {};
     kpiAnnouncements.textContent = Object.keys(ann).length || 0;
-    kpiRequests.textContent = Object.keys(mat).length || 0;
-    kpiDocs.textContent = Object.keys(doc).length || 0;
+    kpiMaterials.textContent = Object.keys(mat).length || 0;
     kpiPayslips.textContent = Object.keys(pays).length || 0;
+    kpiDocuments.textContent = Object.keys(docs).length || 0;
     kpiOperators.textContent = Object.values(users).filter(x=>x.role==='operator').length || 0;
 
-    const byStatus = Object.values(mat).reduce((acc, r) => { acc[r.status] = (acc[r.status]||0)+1; return acc; }, {});
-    dashboardDetails.innerHTML = `<div class="card"><div><strong>Requests by status</strong></div><div class="small">Requested: ${byStatus['Requested']||0} • Approved: ${byStatus['Approved']||0} • Out for Delivery: ${byStatus['Out for Delivery']||0} • Rejected: ${byStatus['Rejected']||0}</div></div>`;
-  }).catch(err=>{ console.warn(err); });
+    const byStatus = Object.values(mat).reduce((acc,r)=>{ acc[r.status] = (acc[r.status]||0)+1; return acc; }, {});
+    dashboardDetails.innerHTML = `<div class="card"><strong>Material requests by status</strong><div class="small" style="margin-top:8px">Requested: ${byStatus['Requested']||0} • Approved: ${byStatus['Approved']||0} • Preparation: ${byStatus['Preparation']||0} • Out for Delivery: ${byStatus['Out for Delivery']||0}</div></div>`;
+  }).catch(err=>console.warn(err));
 }
 
-/* Views */
+/* views */
 function hideAllSections(){ document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden')); }
 function showDashboard(){ hideAllSections(); secDashboard.classList.remove('hidden'); renderDashboardCounts(); }
 function showAnnouncements(){ hideAllSections(); secAnnouncements.classList.remove('hidden'); }
 function showRequests(){ hideAllSections(); secRequests.classList.remove('hidden'); }
 function showDocs(){ hideAllSections(); secDocs.classList.remove('hidden'); }
 function showPayslips(){ hideAllSections(); secPayslips.classList.remove('hidden'); }
-function showOperators(){ hideAllSections(); }
+function showOperators(){ hideAllSections(); secOperators.classList.remove('hidden'); }
 
-/* Restore session: operator via Firebase, admin via localStorage */
+/* restore auth state */
 auth.onAuthStateChanged(async user => {
   if(user){
-    const snapshot = await db.ref('users/' + user.uid).once('value');
-    const profile = snapshot.val() || {};
-    currentUser = { uid: user.uid, email: user.email, name: profile.name || user.email, role: profile.role || 'operator' };
+    const snap = await db.ref('users/' + user.uid).once('value');
+    const profile = snap.val() || {};
+    const role = profile.role === 'admin' ? 'admin' : (user.email === ADMIN_EMAIL ? 'admin' : 'operator');
+    currentUser = { uid: user.uid, email: user.email, name: profile.name || user.email, idNo: profile.idNo || '', role };
     openWorkspace();
   } else {
-    // no firebase user; check admin session in localStorage
-    if(isAdminSession()){
-      currentUser = { role: 'admin', email: ADMIN_EMAIL, name: 'Admin' };
-      openWorkspace();
-    } else {
-      authCard.style.display = 'block';
-      appArea.style.display = 'none';
-      switchTab('login');
-    }
+    authCard.style.display = 'block';
+    appArea.style.display = 'none';
+    switchTab('login');
   }
 });
 
 /* init */
 (function init(){
   document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click', ()=>{ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active')); b.classList.add('active'); }));
-  document.getElementById('toggleBtn').addEventListener('click', ()=> sidebar.classList.toggle('open'));
+  document.getElementById('toggleBtn').addEventListener('click', ()=> document.getElementById('sidebar').classList.toggle('open'));
+  setActiveNav(navAnnouncements);
 })();
+
+/* helper */
+function escape(s){ if(!s) return ''; return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
 </script>
 </body>
 </html>
