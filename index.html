@@ -206,7 +206,7 @@ button.ghost{background:transparent;border:1px solid #d5d7d8;padding:9px;border-
           <!-- Material Requests -->
           <section id="secRequests" class="section hidden">
             <h3>Material Requests</h3>
-             <button class="primary" id="downloadMaterialPDF">Download Material Requests (PDF)</button>
+            <button class="primary" id="downloadMaterialPDF">Download Material Requests (PDF)</button>
             <div id="reqCards"></div>
 
             <div id="operatorReqForm" class="card hidden">
@@ -746,13 +746,22 @@ auth.onAuthStateChanged(async user => {
 
 /* helper */
 function escape(s){ if(!s) return ''; return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
-  /* -----------------------
-   PDF GENERATION SECTION
+/* -----------------------
+   PDF GENERATION (Admin Only)
    ----------------------- */
 import("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js").then(() => {
   const { jsPDF } = window.jspdf;
 
-  // PDF: MATERIAL REQUESTS
+  // Hide PDF buttons if not admin
+  if (currentUser.role !== "admin") {
+    const materialBtn = document.getElementById("downloadMaterialPDF");
+    const payslipBtn = document.getElementById("downloadPayslipPDF");
+    if (materialBtn) materialBtn.style.display = "none";
+    if (payslipBtn) payslipBtn.style.display = "none";
+    return; // Stop execution if not admin
+  }
+
+  /* ========== MATERIAL REQUESTS PDF ========== */
   document.getElementById("downloadMaterialPDF").addEventListener("click", () => {
     const doc = new jsPDF();
     doc.setFont("helvetica", "bold");
@@ -764,7 +773,7 @@ import("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js").th
     doc.setFontSize(11);
     doc.text("Item", 14, y);
     doc.text("Qty", 80, y);
-    doc.text("Requested By", 100, y);
+    doc.text("Requested By", 110, y);
     doc.text("Status", 160, y);
     y += 8;
 
@@ -773,12 +782,12 @@ import("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js").th
       const entries = Object.values(data);
 
       entries.forEach((r) => {
-        if (currentUser.role !== "admin" && r.uid !== (currentUser.uid || null)) return;
         doc.text(String(r.item || ""), 14, y);
         doc.text(String(r.qty || ""), 80, y);
-        doc.text(String(r.by || ""), 100, y);
+        doc.text(String(r.by || ""), 110, y);
         doc.text(String(r.status || ""), 160, y);
         y += 8;
+
         if (y > 270) { doc.addPage(); y = 20; }
       });
 
@@ -786,7 +795,7 @@ import("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js").th
     });
   });
 
-  // PDF: PAYSLIP REQUESTS
+  /* ========== PAYSLIP REQUESTS PDF ========== */
   document.getElementById("downloadPayslipPDF").addEventListener("click", () => {
     const doc = new jsPDF();
     doc.setFont("helvetica", "bold");
@@ -798,7 +807,7 @@ import("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js").th
     doc.setFontSize(11);
     doc.text("Month", 14, y);
     doc.text("Cut-off", 70, y);
-    doc.text("Requested By", 100, y);
+    doc.text("Requested By", 110, y);
     doc.text("Status", 160, y);
     y += 8;
 
@@ -807,12 +816,12 @@ import("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js").th
       const entries = Object.values(data);
 
       entries.forEach((r) => {
-        if (currentUser.role !== "admin" && r.uid !== (currentUser.uid || null)) return;
         doc.text(String(r.month || ""), 14, y);
         doc.text(String(r.cutoff || ""), 70, y);
-        doc.text(String(r.by || ""), 100, y);
+        doc.text(String(r.by || ""), 110, y);
         doc.text(String(r.status || "Requested"), 160, y);
         y += 8;
+
         if (y > 270) { doc.addPage(); y = 20; }
       });
 
@@ -820,6 +829,7 @@ import("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js").th
     });
   });
 });
+
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </body>
