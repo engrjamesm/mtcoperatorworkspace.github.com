@@ -711,40 +711,6 @@ function renderDashboardCounts(){
   }).catch(err=>console.warn(err));
 }
 
-  /* ========== PAYSLIP REQUESTS PDF ========== */
-  document.getElementById("downloadPayslipPDF").addEventListener("click", () => {
-    const doc = new jsPDF();
-    doc.setFont("helvetica", "bold");
-    doc.text("MIRAGA STP PAYSLIP REQUESTS", 14, 15);
-    doc.setFont("helvetica", "normal");
-    doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 25);
-
-    let y = 40;
-    doc.setFontSize(11);
-    doc.text("Month", 14, y);
-    doc.text("Cut-off", 70, y);
-    doc.text("Requested By", 110, y);
-    doc.text("Status", 160, y);
-    y += 8;
-
-    db.ref("payslipRequests").once("value").then((snap) => {
-      const data = snap.val() || {};
-      const entries = Object.values(data);
-
-      entries.forEach((r) => {
-        doc.text(String(r.month || ""), 14, y);
-        doc.text(String(r.cutoff || ""), 70, y);
-        doc.text(String(r.by || ""), 110, y);
-        doc.text(String(r.status || "Requested"), 160, y);
-        y += 8;
-
-        if (y > 270) { doc.addPage(); y = 20; }
-      });
-
-      doc.save("Payslip_Requests.pdf");
-    });
-  });
-});
 
 /* views */
 function hideAllSections(){ document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden')); }
