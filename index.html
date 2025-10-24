@@ -206,7 +206,6 @@ button.ghost{background:transparent;border:1px solid #d5d7d8;padding:9px;border-
           <!-- Material Requests -->
           <section id="secRequests" class="section hidden">
             <h3>Material Requests</h3>
-            <button class="primary" id="downloadMaterialPDF">Download Material Requests (PDF)</button>
                       <div id="reqCards"></div>
 
             <div id="operatorReqForm" class="card hidden">
@@ -249,7 +248,6 @@ button.ghost{background:transparent;border:1px solid #d5d7d8;padding:9px;border-
 
           <!-- Payslips -->
           <section id="secPayslips" class="section hidden">
-            <button class="primary" id="downloadPayslipPDF">Download Payslip Requests (PDF)</button>
             <h3>Payslip Requests</h3>
             <div id="payslipCards"></div>
             <div id="operatorPayslipForm" class="card hidden">
@@ -748,89 +746,6 @@ auth.onAuthStateChanged(async user => {
 /* helper */
 function escape(s){ if(!s) return ''; return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
   
-/*** 🚀 NEW CODE START: PDF GENERATION (ADMIN ONLY) ***/
-import("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js").then(() => {
-  const { jsPDF } = window.jspdf;
-
-  // Hide PDF buttons if not admin
-  if (currentUser.role !== "admin") {
-    const materialBtn = document.getElementById("downloadMaterialPDF");
-    const payslipBtn = document.getElementById("downloadPayslipPDF");
-    if (materialBtn) materialBtn.style.display = "none";
-    if (payslipBtn) payslipBtn.style.display = "none";
-    return; // Stop execution if not admin
-  }
-
-  /* ========== MATERIAL REQUESTS PDF ========== */
-  document.getElementById("downloadMaterialPDF").addEventListener("click", () => {
-    const doc = new jsPDF();
-    doc.setFont("helvetica", "bold");
-    doc.text("MIRAGA STP MATERIAL REQUESTS", 14, 15);
-    doc.setFont("helvetica", "normal");
-    doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 25);
-
-    let y = 40;
-    doc.setFontSize(11);
-    doc.text("Item", 14, y);
-    doc.text("Qty", 80, y);
-    doc.text("Requested By", 110, y);
-    doc.text("Status", 160, y);
-    y += 8;
-
-    db.ref("materialRequests").once("value").then((snap) => {
-      const data = snap.val() || {};
-      const entries = Object.values(data);
-
-      entries.forEach((r) => {
-        doc.text(String(r.item || ""), 14, y);
-        doc.text(String(r.qty || ""), 80, y);
-        doc.text(String(r.by || ""), 110, y);
-        doc.text(String(r.status || ""), 160, y);
-        y += 8;
-
-        if (y > 270) { doc.addPage(); y = 20; }
-      });
-
-      doc.save("Material_Requests.pdf");
-    });
-  });
-
-  /* ========== PAYSLIP REQUESTS PDF ========== */
-  document.getElementById("downloadPayslipPDF").addEventListener("click", () => {
-    const doc = new jsPDF();
-    doc.setFont("helvetica", "bold");
-    doc.text("MIRAGA STP PAYSLIP REQUESTS", 14, 15);
-    doc.setFont("helvetica", "normal");
-    doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 25);
-
-    let y = 40;
-    doc.setFontSize(11);
-    doc.text("Month", 14, y);
-    doc.text("Cut-off", 70, y);
-    doc.text("Requested By", 110, y);
-    doc.text("Status", 160, y);
-    y += 8;
-
-    db.ref("payslipRequests").once("value").then((snap) => {
-      const data = snap.val() || {};
-      const entries = Object.values(data);
-
-      entries.forEach((r) => {
-        doc.text(String(r.month || ""), 14, y);
-        doc.text(String(r.cutoff || ""), 70, y);
-        doc.text(String(r.by || ""), 110, y);
-        doc.text(String(r.status || "Requested"), 160, y);
-        y += 8;
-
-        if (y > 270) { doc.addPage(); y = 20; }
-      });
-
-      doc.save("Payslip_Requests.pdf");
-    });
-  });
-});/
-
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </body>
 </html>
