@@ -747,92 +747,88 @@ auth.onAuthStateChanged(async user => {
 
 /* helper */
 function escape(s){ if(!s) return ''; return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+  
 /*** 🚀 NEW CODE START: PDF GENERATION (ADMIN ONLY) ***/
 import("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js").then(() => {
   const { jsPDF } = window.jspdf;
 
-  // Wait for auth to load
-  firebase.auth().onAuthStateChanged((user) => {
-    if (!user) return;
+  // Hide PDF buttons if not admin
+  if (currentUser.role !== "admin") {
+    const materialBtn = document.getElementById("downloadMaterialPDF");
+    const payslipBtn = document.getElementById("downloadPayslipPDF");
+    if (materialBtn) materialBtn.style.display = "none";
+    if (payslipBtn) payslipBtn.style.display = "none";
+    return; // Stop execution if not admin
+  }
 
-    // Fetch user role
-    db.ref("users/" + user.uid).once("value").then((snap) => {
-      const role = snap.val()?.role || "operator";
+  /* ========== MATERIAL REQUESTS PDF ========== */
+  document.getElementById("downloadMaterialPDF").addEventListener("click", () => {
+    const doc = new jsPDF();
+    doc.setFont("helvetica", "bold");
+    doc.text("MIRAGA STP MATERIAL REQUESTS", 14, 15);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 25);
 
-      // Hide PDF buttons for non-admins
-      if (role !== "admin") {
-        document.getElementById("downloadMaterialPDF").style.display = "none";
-        document.getElementById("downloadPayslipPDF").style.display = "none";
-        return;
-      }
+    let y = 40;
+    doc.setFontSize(11);
+    doc.text("Item", 14, y);
+    doc.text("Qty", 80, y);
+    doc.text("Requested By", 110, y);
+    doc.text("Status", 160, y);
+    y += 8;
 
-      // ========== MATERIAL REQUESTS ==========
-      document.getElementById("downloadMaterialPDF").addEventListener("click", () => {
-        const doc = new jsPDF();
-        doc.setFont("helvetica", "bold");
-        doc.text("MIRAGA STP MATERIAL REQUESTS", 14, 15);
-        doc.setFont("helvetica", "normal");
-        doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 25);
+    db.ref("materialRequests").once("value").then((snap) => {
+      const data = snap.val() || {};
+      const entries = Object.values(data);
 
-        let y = 40;
-        doc.setFontSize(11);
-        doc.text("Item", 14, y);
-        doc.text("Qty", 80, y);
-        doc.text("Requested By", 110, y);
-        doc.text("Status", 160, y);
+      entries.forEach((r) => {
+        doc.text(String(r.item || ""), 14, y);
+        doc.text(String(r.qty || ""), 80, y);
+        doc.text(String(r.by || ""), 110, y);
+        doc.text(String(r.status || ""), 160, y);
         y += 8;
 
-        db.ref("materialRequests").once("value").then((snap) => {
-          const data = snap.val() || {};
-          Object.values(data).forEach((r) => {
-            doc.text(String(r.item || ""), 14, y);
-            doc.text(String(r.qty || ""), 80, y);
-            doc.text(String(r.by || ""), 110, y);
-            doc.text(String(r.status || ""), 160, y);
-            y += 8;
-            if (y > 270) { doc.addPage(); y = 20; }
-          });
-
-          const filename = `Material_Requests_${new Date().toISOString().split("T")[0]}.pdf`;
-          doc.save(filename);
-        });
+        if (y > 270) { doc.addPage(); y = 20; }
       });
 
-      // ========== PAYSLIP REQUESTS ==========
-      document.getElementById("downloadPayslipPDF").addEventListener("click", () => {
-        const doc = new jsPDF();
-        doc.setFont("helvetica", "bold");
-        doc.text("MIRAGA STP PAYSLIP REQUESTS", 14, 15);
-        doc.setFont("helvetica", "normal");
-        doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 25);
-
-        let y = 40;
-        doc.setFontSize(11);
-        doc.text("Month", 14, y);
-        doc.text("Cut-off", 70, y);
-        doc.text("Requested By", 110, y);
-        doc.text("Status", 160, y);
-        y += 8;
-
-        db.ref("payslipRequests").once("value").then((snap) => {
-          const data = snap.val() || {};
-          Object.values(data).forEach((r) => {
-            doc.text(String(r.month || ""), 14, y);
-            doc.text(String(r.cutoff || ""), 70, y);
-            doc.text(String(r.by || ""), 110, y);
-            doc.text(String(r.status || "Requested"), 160, y);
-            y += 8;
-            if (y > 270) { doc.addPage(); y = 20; }
-          });
-
-          const filename = `Payslip_Requests_${new Date().toISOString().split("T")[0]}.pdf`;
-          doc.save(filename);
-        });
-      });
+      doc.save("Material_Requests.pdf");
     });
   });
-});
-/*** 🚀 NEW CODE END ***/
+
+  /* ========== PAYSLIP REQUESTS PDF ========== */
+  document.getElementById("downloadPayslipPDF").addEventListener("click", () => {
+    const doc = new jsPDF();
+    doc.setFont("helvetica", "bold");
+    doc.text("MIRAGA STP PAYSLIP REQUESTS", 14, 15);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 25);
+
+    let y = 40;
+    doc.setFontSize(11);
+    doc.text("Month", 14, y);
+    doc.text("Cut-off", 70, y);
+    doc.text("Requested By", 110, y);
+    doc.text("Status", 160, y);
+    y += 8;
+
+    db.ref("payslipRequests").once("value").then((snap) => {
+      const data = snap.val() || {};
+      const entries = Object.values(data);
+
+      entries.forEach((r) => {
+        doc.text(String(r.month || ""), 14, y);
+        doc.text(String(r.cutoff || ""), 70, y);
+        doc.text(String(r.by || ""), 110, y);
+        doc.text(String(r.status || "Requested"), 160, y);
+        y += 8;
+
+        if (y > 270) { doc.addPage(); y = 20; }
+      });
+
+      doc.save("Payslip_Requests.pdf");
+    });
+  });
+});/
 
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
