@@ -712,40 +712,6 @@ function renderDashboardCounts(){
     dashboardDetails.innerHTML = `<div class="card"><strong>Material requests by status</strong><div class="small" style="margin-top:8px">Requested: ${byStatus['Requested']||0} • Approved: ${byStatus['Approved']||0} • Preparation: ${byStatus['Preparation']||0} • Out for Delivery: ${byStatus['Out for Delivery']||0}</div></div>`;
   }).catch(err=>console.warn(err));
 }
-
-/* views */
-function hideAllSections(){ document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden')); }
-function showDashboard(){ hideAllSections(); secDashboard.classList.remove('hidden'); renderDashboardCounts(); }
-function showAnnouncements(){ hideAllSections(); secAnnouncements.classList.remove('hidden'); }
-function showRequests(){ hideAllSections(); secRequests.classList.remove('hidden'); }
-function showDocs(){ hideAllSections(); secDocs.classList.remove('hidden'); }
-function showPayslips(){ hideAllSections(); secPayslips.classList.remove('hidden'); }
-function showOperators(){ hideAllSections(); secOperators.classList.remove('hidden'); }
-
-/* restore auth state */
-auth.onAuthStateChanged(async user => {
-  if(user){
-    const snap = await db.ref('users/' + user.uid).once('value');
-    const profile = snap.val() || {};
-    const role = profile.role === 'admin' ? 'admin' : (user.email === ADMIN_EMAIL ? 'admin' : 'operator');
-    currentUser = { uid: user.uid, email: user.email, name: profile.name || user.email, idNo: profile.idNo || '', role };
-    openWorkspace();
-  } else {
-    authCard.style.display = 'block';
-    appArea.style.display = 'none';
-    switchTab('login');
-  }
-});
-
-/* init */
-(function init(){
-  document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click', ()=>{ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active')); b.classList.add('active'); }));
-  document.getElementById('toggleBtn').addEventListener('click', ()=> document.getElementById('sidebar').classList.toggle('open'));
-  setActiveNav(navAnnouncements);
-})();
-
-/* helper */
-function escape(s){ if(!s) return ''; return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
 /* -----------------------
    PDF GENERATION (Admin Only)
    ----------------------- */
@@ -830,7 +796,42 @@ import("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js").th
   });
 });
 
+/* views */
+function hideAllSections(){ document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden')); }
+function showDashboard(){ hideAllSections(); secDashboard.classList.remove('hidden'); renderDashboardCounts(); }
+function showAnnouncements(){ hideAllSections(); secAnnouncements.classList.remove('hidden'); }
+function showRequests(){ hideAllSections(); secRequests.classList.remove('hidden'); }
+function showDocs(){ hideAllSections(); secDocs.classList.remove('hidden'); }
+function showPayslips(){ hideAllSections(); secPayslips.classList.remove('hidden'); }
+function showOperators(){ hideAllSections(); secOperators.classList.remove('hidden'); }
+
+/* restore auth state */
+auth.onAuthStateChanged(async user => {
+  if(user){
+    const snap = await db.ref('users/' + user.uid).once('value');
+    const profile = snap.val() || {};
+    const role = profile.role === 'admin' ? 'admin' : (user.email === ADMIN_EMAIL ? 'admin' : 'operator');
+    currentUser = { uid: user.uid, email: user.email, name: profile.name || user.email, idNo: profile.idNo || '', role };
+    openWorkspace();
+  } else {
+    authCard.style.display = 'block';
+    appArea.style.display = 'none';
+    switchTab('login');
+  }
+});
+
+/* init */
+(function init(){
+  document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click', ()=>{ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active')); b.classList.add('active'); }));
+  document.getElementById('toggleBtn').addEventListener('click', ()=> document.getElementById('sidebar').classList.toggle('open'));
+  setActiveNav(navAnnouncements);
+})();
+
+/* helper */
+function escape(s){ if(!s) return ''; return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 </body>
 </html>
