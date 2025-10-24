@@ -206,8 +206,7 @@ button.ghost{background:transparent;border:1px solid #d5d7d8;padding:9px;border-
           <!-- Material Requests -->
           <section id="secRequests" class="section hidden">
             <h3>Material Requests</h3>
-            <button class="primary" id="downloadMaterialPDF">Download Material Requests (PDF)</button>
-            <div id="reqCards"></div>
+                      <div id="reqCards"></div>
 
             <div id="operatorReqForm" class="card hidden">
               <label for="reqItem">Item / Description</label>
@@ -250,7 +249,6 @@ button.ghost{background:transparent;border:1px solid #d5d7d8;padding:9px;border-
           <!-- Payslips -->
           <section id="secPayslips" class="section hidden">
             <h3>Payslip Requests</h3>
-            <button class="primary" id="downloadPayslipPDF">Download Payslip Requests (PDF)</button>
             <div id="payslipCards"></div>
             <div id="operatorPayslipForm" class="card hidden">
               <label for="psMonth">Month</label>
@@ -712,54 +710,6 @@ function renderDashboardCounts(){
     dashboardDetails.innerHTML = `<div class="card"><strong>Material requests by status</strong><div class="small" style="margin-top:8px">Requested: ${byStatus['Requested']||0} • Approved: ${byStatus['Approved']||0} • Preparation: ${byStatus['Preparation']||0} • Out for Delivery: ${byStatus['Out for Delivery']||0}</div></div>`;
   }).catch(err=>console.warn(err));
 }
-/* -----------------------
-   PDF GENERATION (Admin Only)
-   ----------------------- */
-import("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js").then(() => {
-  const { jsPDF } = window.jspdf;
-
-  // Hide PDF buttons if not admin
-  if (currentUser.role !== "admin") {
-    const materialBtn = document.getElementById("downloadMaterialPDF");
-    const payslipBtn = document.getElementById("downloadPayslipPDF");
-    if (materialBtn) materialBtn.style.display = "none";
-    if (payslipBtn) payslipBtn.style.display = "none";
-    return; // Stop execution if not admin
-  }
-
-  /* ========== MATERIAL REQUESTS PDF ========== */
-  document.getElementById("downloadMaterialPDF").addEventListener("click", () => {
-    const doc = new jsPDF();
-    doc.setFont("helvetica", "bold");
-    doc.text("MIRAGA STP MATERIAL REQUESTS", 14, 15);
-    doc.setFont("helvetica", "normal");
-    doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 25);
-
-    let y = 40;
-    doc.setFontSize(11);
-    doc.text("Item", 14, y);
-    doc.text("Qty", 80, y);
-    doc.text("Requested By", 110, y);
-    doc.text("Status", 160, y);
-    y += 8;
-
-    db.ref("materialRequests").once("value").then((snap) => {
-      const data = snap.val() || {};
-      const entries = Object.values(data);
-
-      entries.forEach((r) => {
-        doc.text(String(r.item || ""), 14, y);
-        doc.text(String(r.qty || ""), 80, y);
-        doc.text(String(r.by || ""), 110, y);
-        doc.text(String(r.status || ""), 160, y);
-        y += 8;
-
-        if (y > 270) { doc.addPage(); y = 20; }
-      });
-
-      doc.save("Material_Requests.pdf");
-    });
-  });
 
   /* ========== PAYSLIP REQUESTS PDF ========== */
   document.getElementById("downloadPayslipPDF").addEventListener("click", () => {
@@ -831,7 +781,6 @@ auth.onAuthStateChanged(async user => {
 function escape(s){ if(!s) return ''; return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
 
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 </body>
 </html>
