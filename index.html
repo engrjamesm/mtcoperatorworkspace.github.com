@@ -191,6 +191,13 @@ button.ghost{background:transparent;border:1px solid #d5d7d8;padding:9px;border-
           <section id="secAnnouncements" class="section hidden">
             <h3>Announcements</h3>
             <div id="annCards"></div>
+            <style>
+                  /* ✅ Preserve user spacing, indentation & line breaks */
+            #annCards .ann-body {
+            white-space: pre-wrap;
+            }
+            </style>
+            
             <div id="adminAnnForm" class="card hidden">
               <label for="annTitle">Title</label>
               <input id="annTitle" type="text" placeholder="Title">
