@@ -190,25 +190,27 @@ button.ghost{background:transparent;border:1px solid #d5d7d8;padding:9px;border-
           <!-- Announcements -->
           <section id="secAnnouncements" class="section hidden">
             <h3>Announcements</h3>
-            <div id="annCards"></div>
-            <style>
-                  /* ✅ Preserve user spacing, indentation & line breaks */
-            #annCards .ann-body {
-            white-space: pre-wrap;
-            }
-            </style>
-            
-            <div id="adminAnnForm" class="card hidden">
-              <label for="annTitle">Title</label>
-              <input id="annTitle" type="text" placeholder="Title">
-              <label for="annBody">Body</label>
-              <textarea id="annBody" placeholder="Details..."></textarea>
-              <div style="display:flex;gap:10px;margin-top:8px">
-                <button class="primary" id="postAnn">Add Announcement</button>
-                <button class="ghost" id="clearAnn">Clear</button>
-              </div>
-            </div>
-          </section>
+        <div id="annCards"></div>
+  <style>
+    /* ✅ Preserve user spacing, indentation & line breaks */
+    #annCards .ann-body {
+      white-space: pre-wrap;
+    }
+  </style>
+
+  <div id="adminAnnForm" class="card hidden">
+    <label for="annTitle">Title</label>
+    <input id="annTitle" type="text" placeholder="Title">
+
+    <label for="annBody">Body</label>
+    <textarea id="annBody" placeholder="Details..."></textarea>
+
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="primary" id="postAnn">Add Announcement</button>
+      <button class="ghost" id="clearAnn">Clear</button>
+    </div>
+  </div>
+</section>
 
           <!-- Material Requests -->
           <section id="secRequests" class="section hidden">
