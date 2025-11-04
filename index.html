@@ -194,7 +194,7 @@ button.ghost{background:transparent;border:1px solid #d5d7d8;padding:9px;border-
   <style>
     /* ✅ Preserve user spacing, indentation & line breaks */
     #annCards .ann-body {
-      white-space: pre-wrap;
+      white-space: normal;
     }
   </style>
 
@@ -556,6 +556,22 @@ postAnnBtn.addEventListener('click', async ()=>{
 });
 clearAnnBtn.addEventListener('click', ()=>{ annTitle.value=''; annBody.value=''; });
 
+function formatAnnouncement(text) {
+  if (!text) return "";
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    // Allow bold/strong
+    .replace(/&lt;(b|strong)&gt;/g, "<b>")
+    .replace(/&lt;\/(b|strong)&gt;/g, "</b>")
+    // Allow italic/emphasis
+    .replace(/&lt;(i|em)&gt;/g, "<i>")
+    .replace(/&lt;\/(i|em)&gt;/g, "</i>")
+    // Convert new line to <br>
+    .replace(/\n/g, "<br>");
+}
+  
 function renderAnnouncements(obj){
   annCards.innerHTML = '';
   const entries = Object.values(obj).sort((a,b)=> (b.ts||0)-(a.ts||0));
@@ -564,7 +580,7 @@ function renderAnnouncements(obj){
     const el = document.createElement('div'); el.className='item';
     el.innerHTML = `<div style="font-weight:700">${escape(a.title||'Untitled')}</div>
                     <div class="small">${new Date((a.ts||0)).toLocaleString()} • ${escape(a.author||'')}</div>
-                    <div style="margin-top:8px">${escape(a.body)}</div>
+                    <div class="ann-body" style="margin-top:8px">${formatAnnouncement(a.body)}</div>
                     ${ currentUser && currentUser.role==='admin' ? `<div style="margin-top:8px"><button class="ghost" onclick="removeAnnouncement('${a.id}')">Remove</button></div>` : '' }`;
     annCards.appendChild(el);
   });
