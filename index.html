@@ -564,11 +564,12 @@ function renderAnnouncements(obj){
     const el = document.createElement('div'); el.className='item';
     el.innerHTML = `<div style="font-weight:700">${escape(a.title||'Untitled')}</div>
                     <div class="small">${new Date((a.ts||0)).toLocaleString()} • ${escape(a.author||'')}</div>
-                    <div class="ann-body" style="margin-top:8px">${formatAnnouncement(a.body)}</div>
+                    <div style="margin-top:8px">${escape(a.body)}</div>
                     ${ currentUser && currentUser.role==='admin' ? `<div style="margin-top:8px"><button class="ghost" onclick="removeAnnouncement('${a.id}')">Remove</button></div>` : '' }`;
     annCards.appendChild(el);
   });
 }
+window.removeAnnouncement = async (id)=>{ if(!confirm('Remove announcement?')) return; await db.ref('announcements/' + id).remove(); };
 window.removeAnnouncement = async (id)=>{ if(!confirm('Remove announcement?')) return; await db.ref('announcements/' + id).remove(); };
 
 /* ===== Material Requests ===== */
